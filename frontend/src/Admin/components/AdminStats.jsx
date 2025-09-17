@@ -44,7 +44,7 @@ export default function AdminStats() {
       });
       setVendors(res.data);
     } catch (err) {
-      console.error(err);
+      console.error(err); 
     }
   };
 

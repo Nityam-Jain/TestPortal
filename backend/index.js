@@ -8,6 +8,8 @@ const testRoutes = require("./Routes/testRoutes");
 const courseRoutes = require("./Routes/courseRoutes");
 const categoryRoutes = require("./Routes/categoryRoutes");
 const subjectRoutes = require("./Routes/subjectRoutes");
+const resultRoutes = require("./Routes/resultRoutes");
+
 const dotenv = require("dotenv");
 dotenv.config();
 const app = express();
@@ -26,7 +28,6 @@ app.use("/api/reels", reelRoutes);
 
 
 // Middlewares
-app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -39,6 +40,8 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/results", resultRoutes);
+
 
  app.use(cors({  
   origin: "http://localhost:5173", // Your frontend URL

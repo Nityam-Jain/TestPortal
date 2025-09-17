@@ -1,83 +1,168 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 export default function TakeTest() {
   const { testId } = useParams();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [duration, setDuration] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isTimeUp, setIsTimeUp] = useState(false); // New state to block further actions
+  const timerRef = useRef(null);
+
   const token = sessionStorage.getItem("userToken");
 
   useEffect(() => {
-    const fetchQuestions = async (categoryId) => {
+    const fetchTestAndQuestions = async () => {
       try {
-        const res = await axios.get(`/api/questions/${categoryId}`, {
+        const testRes = await axios.get(`/api/tests/${testId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setQuestions(res.data.questions || []);
+
+        const test = testRes.data;
+        const categoryId = test.categoryId?._id;
+
+        if (!categoryId) {
+          Swal.fire("Error", "Test category not found", "error");
+          setLoading(false);
+          return;
+        }
+
+        setDuration(test.duration || 0);
+        setTimeLeft((test.duration || 0) * 60);
+
+        const questionsRes = await axios.get(`/api/questions/student/${categoryId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setQuestions(questionsRes.data.questions || []);
       } catch (err) {
-        Swal.fire("Error", "Failed to fetch questions", "error");
+        console.error(err);
+        Swal.fire("Error", "Failed to fetch test or questions", "error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQuestions();
+    fetchTestAndQuestions();
   }, [testId, token]);
 
+  // Timer countdown effect
+  useEffect(() => {
+    if (timeLeft <= 0 && duration > 0) {
+      clearInterval(timerRef.current);
+      setIsTimeUp(true); // Block further attempts
+      Swal.fire("Time's Up", "Sorry, time’s up. You can no longer attempt the test.", "error");
+    }
+  }, [timeLeft, duration]);
+
+  useEffect(() => {
+    if (duration > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timerRef.current);
+    } 
+  }, [duration]); 
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
   const handleAnswer = (qId, value) => {
+    if (isTimeUp) return; // Prevent selecting after time's up
     setAnswers({ ...answers, [qId]: value });
   };
 
   const handleNext = () => {
-    if (currentQ < questions.length - 1) setCurrentQ(currentQ + 1);
-    else handleSubmit();
+    if (isTimeUp) return; // Prevent proceeding after time's up
+
+    const q = questions[currentQ];
+    if (!answers[q._id]) {
+      Swal.fire("Warning", "Please select an answer before proceeding", "warning");
+      return;
+    }
+
+    if (currentQ < questions.length - 1) {
+      setCurrentQ(currentQ + 1);
+    } else {
+      handleSubmit();
+    }
   };
 
   const handleSubmit = () => {
+    clearInterval(timerRef.current);
     console.log("Submitted Answers:", answers);
-    Swal.fire("Test Completed!", "Your answers have been submitted.", "success");
-    // Optionally: send answers to backend API
+    Swal.fire("Test Completed!", "Your answers have been submitted.", "success").then(() => {
+      // navigate("/"); // Optionally redirect
+    });
   };
 
-  if (loading) return <p className="p-6 text-center">Loading questions...</p>;
-  if (!questions.length) return <p className="p-6 text-center">No questions available.</p>;
+  if (loading) return <p className="p-6 text-center text-lg">Loading questions...</p>;
+  if (!questions.length) return <p className="p-6 text-center text-lg">No questions available.</p>;
 
   const q = questions[currentQ];
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">
-        Question {currentQ + 1} of {questions.length}
-      </h2>
-      <p className="mb-4 text-gray-700">{q.questionText}</p>
-
-      {q.options?.map((opt, idx) => (
-        <div key={idx} className="mb-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name={q._id}
-              value={opt}
-              checked={answers[q._id] === opt}
-              onChange={() => handleAnswer(q._id, opt)}
-              className="accent-blue-500"
-            />
-            {opt}
-          </label>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-50 to-indigo-50 px-4">
+      <div className="w-full max-w-3xl bg-white shadow-xl rounded-xl p-6 space-y-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-blue-700">Take the Test</h2>
+          <div className="text-lg font-medium text-red-600">Time Left: {formatTime(timeLeft)}</div>
         </div>
-      ))}
+        <div className="text-gray-700 mb-4">
+          <span className="font-semibold">Duration:</span> {duration} minutes
+        </div>
 
-      <button
-        onClick={handleNext}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        {currentQ === questions.length - 1 ? "Submit Test" : "Next Question"}
-      </button>
-    </div>
+        <div className="p-5 bg-blue-50 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+          <h3 className="text-xl font-semibold text-blue-800 mb-3">
+            Question {currentQ + 1} of {questions.length}
+          </h3>
+          <p className="text-gray-800 mb-4">{q.questionText}</p>
+          <div className="space-y-3">
+            {q.options?.map((opt, idx) => (
+              <label
+                key={idx}
+                className={`flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-blue-100 transition duration-200 ${
+                  answers[q._id] === opt ? "bg-blue-100 border-blue-500" : "border-gray-300"
+                } ${isTimeUp ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name={q._id}
+                  value={opt}
+                  checked={answers[q._id] === opt}
+                  onChange={() => handleAnswer(q._id, opt)}
+                  className="accent-blue-500"
+                  disabled={isTimeUp}
+                />
+                <span className="text-gray-700">{opt}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="text-center">
+          <button
+            onClick={handleNext}
+            disabled={isTimeUp}
+            className={`px-6 py-3 rounded transition duration-300 ${
+              isTimeUp
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
+          >
+            {currentQ === questions.length - 1 ? "Submit Test" : "Next Question"}
+          </button>
+        </div>
+      </div>
+    </div>  
   );
 }
- 

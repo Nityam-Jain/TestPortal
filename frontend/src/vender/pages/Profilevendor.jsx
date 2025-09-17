@@ -27,7 +27,6 @@ const ProfileVendor = () => {
     idProofNumber: "",
   });
 
-  // Fetch vendor profile on load
   useEffect(() => {
     const token = sessionStorage.getItem("venderToken");
 
@@ -55,7 +54,6 @@ const ProfileVendor = () => {
       });
   }, []);
 
-  // Handle input change
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -63,7 +61,6 @@ const ProfileVendor = () => {
     }));
   };
 
-  // Handle update profile
   const handleUpdate = async (e) => {
     e.preventDefault();
     const token = sessionStorage.getItem("venderToken");
@@ -88,23 +85,18 @@ const ProfileVendor = () => {
   };
 
   return (
-    <div className="   flex items-center justify-center  py-10">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-7xl p-8 md:p-10">
+    <div className="flex items-center justify-center py-10 bg-gray-50 min-h-screen">
+      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-5xl p-6 md:p-8 relative">
         <h2 className="text-3xl font-bold text-center text-[#1B3C53] mb-8">
-          Vendor Profile
+          {profile ? `${profile.username}'s Profile` : "Vendor Profile"}
         </h2>
 
         {profile ? (
           editMode ? (
-            <form
-              onSubmit={handleUpdate}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
+            <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Username */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Username
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Username</label>
                 <input
                   type="text"
                   name="username"
@@ -116,9 +108,7 @@ const ProfileVendor = () => {
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Email
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -130,9 +120,7 @@ const ProfileVendor = () => {
 
               {/* Mobile */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Mobile
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Mobile</label>
                 <input
                   type="text"
                   name="mobile"
@@ -144,9 +132,7 @@ const ProfileVendor = () => {
 
               {/* Address */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Address
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Address</label>
                 <textarea
                   name="address"
                   rows="2"
@@ -158,9 +144,7 @@ const ProfileVendor = () => {
 
               {/* Business Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Business / Institute
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Business / Institute</label>
                 <input
                   type="text"
                   name="businessName"
@@ -172,9 +156,7 @@ const ProfileVendor = () => {
 
               {/* ID Proof Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  ID Proof Name
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">ID Proof Name</label>
                 <select
                   name="idProofName"
                   value={formData.idProofName}
@@ -191,9 +173,7 @@ const ProfileVendor = () => {
 
               {/* ID Proof Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  ID Proof Number
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">ID Proof Number</label>
                 <input
                   type="text"
                   name="idProofNumber"
@@ -222,95 +202,95 @@ const ProfileVendor = () => {
             </form>
           ) : (
             <div className="relative">
-              <div className="absolute -top-15 right-0">
+              {/* Edit Button */}
+              <div className="absolute -top-10 right-0 md:-top-15">
                 <button
                   onClick={() => setEditMode(true)}
-                  className="flex items-center gap-2 bg-blue-500 text-white h-10 md:h-12 px-4 md:px-6 py-2 rounded-lg hover:bg-blue-600 transition"
+                  className="flex items-center gap-2 bg-blue-500 text-white h-10 px-4 rounded-lg hover:bg-blue-600 transition"
                 >
                   <Edit2 size={18} /> Edit
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Username */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-blue-100 to-blue-200 hover:scale-105 transition">
-                  <User className="text-blue-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">Username</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.username}
-                    </p>
+
+              <div className="space-y-6">
+                {/* Group 1: Username, Email, Mobile */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-blue-100 to-blue-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <User className="text-blue-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">Username</p>
+                        <p className="text-gray-800 font-semibold">{profile.username}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-purple-100 to-purple-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <Mail className="text-purple-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">Email</p>
+                        <p className="text-gray-800 font-semibold">{profile.email}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-green-100 to-green-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <Smartphone className="text-green-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">Mobile</p>
+                        <p className="text-gray-800 font-semibold">{profile.mobile}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Email */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-purple-100 to-purple-200 hover:scale-105 transition">
-                  <Mail className="text-purple-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">Email</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.email}
-                    </p>
+                {/* Group 2: Address, Business, ID Proof */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-yellow-100 to-yellow-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <MapPin className="text-yellow-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">Address</p>
+                        <p className="text-gray-800 font-semibold">{profile.address}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-pink-100 to-pink-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <Briefcase className="text-pink-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">Business / Institute</p>
+                        <p className="text-gray-800 font-semibold">{profile.businessName}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-indigo-100 to-indigo-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <CreditCard className="text-indigo-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">ID Proof</p>
+                        <p className="text-gray-800 font-semibold">{profile.idProofName}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Mobile */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-green-100 to-green-200 hover:scale-105 transition">
-                  <Smartphone className="text-green-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">Mobile</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.mobile}
-                    </p>
+                {/* Group 3: ID Proof Number */}
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                  <div className="p-4 rounded-xl shadow-md bg-gradient-to-r from-gray-100 to-gray-200 hover:scale-105 transition">
+                    <div className="flex items-center gap-4">
+                      <CreditCard className="text-gray-600" size={28} />
+                      <div>
+                        <p className="text-gray-500 text-sm">ID Number</p>
+                        <p className="text-gray-800 font-semibold">{profile.idProofNumber}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                {/* Address */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-yellow-100 to-yellow-200 hover:scale-105 transition">
-                  <MapPin className="text-yellow-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">Address</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.address}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Business/Institute */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-pink-100 to-pink-200 hover:scale-105 transition">
-                  <Briefcase className="text-pink-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">
-                      Business / Institute
-                    </p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.businessName}
-                    </p>
-                  </div>
-                </div>
-
-                {/* ID Proof Name */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-indigo-100 to-indigo-200 hover:scale-105 transition">
-                  <CreditCard className="text-indigo-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">ID Proof</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.idProofName}
-                    </p>
-                  </div>
-                </div>
-
-                {/* ID Proof Number */}
-                <div className="flex items-center gap-4 p-4 rounded-xl shadow-md bg-gradient-to-r from-gray-100 to-gray-200 hover:scale-105 transition">
-                  <CreditCard className="text-gray-600" size={28} />
-                  <div>
-                    <p className="text-gray-500 text-sm">ID Number</p>
-                    <p className="text-gray-800 font-semibold">
-                      {profile.idProofNumber}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Edit Button */}
               </div>
             </div>
           )

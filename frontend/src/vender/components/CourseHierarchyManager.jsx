@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Edit2Icon, Trash, ArrowLeft } from "lucide-react";
+import { Edit2Icon, Trash2, ArrowLeft } from "lucide-react";
 
 export default function CourseHierarchyManager() {
   const [courses, setCourses] = useState([]);
@@ -10,7 +10,7 @@ export default function CourseHierarchyManager() {
 
   const token = sessionStorage.getItem("venderToken");
 
-  // Fetch hierarchy
+  // Fetch hierarchy 
   const fetchHierarchy = async () => {
     try {
       const res = await axios.get("/api/courses/hierarchy", {
@@ -129,10 +129,10 @@ export default function CourseHierarchyManager() {
                 >
                   {course.name}
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex justify-end">
                   <button
                     onClick={() => handleEdit("Course", course, "courses")}
-                    className="p-2 bg-blue-500 text-white rounded"
+                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"
                   >
                     <Edit2Icon size={16} />
                   </button>
@@ -140,9 +140,10 @@ export default function CourseHierarchyManager() {
                     onClick={() =>
                       handleDelete("Course", course._id, "courses")
                     }
-                    className="p-2 bg-red-500 text-white rounded"
+                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
+                    title="Delete"
                   >
-                    <Trash size={16} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -181,20 +182,19 @@ export default function CourseHierarchyManager() {
                 >
                   {subj.name}
                 </h4>
-                <div className="flex gap-2">
+                <div className="flex justify-end">
                   <button
                     onClick={() => handleEdit("Subject", subj, "subjects")}
-                    className="p-2 bg-blue-500 text-white rounded"
-                  >
+                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"              >
                     <Edit2Icon size={16} />
                   </button>
                   <button
                     onClick={() =>
                       handleDelete("Subject", subj._id, "subjects")
                     }
-                    className="p-2 bg-red-500 text-white rounded"
-                  >
-                    <Trash size={16} />
+                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
+                    title="Delete"                 >
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -231,17 +231,16 @@ export default function CourseHierarchyManager() {
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={() => handleEdit("Category", cat, "categories")}
-                    className="p-2 bg-blue-500 text-white rounded"
-                  >
+                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"                  >
                     <Edit2Icon size={16} />
                   </button>
                   <button
                     onClick={() =>
                       handleDelete("Category", cat._id, "categories")
                     }
-                    className="p-2 bg-red-500 text-white rounded"
+                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
                   >
-                    <Trash size={16} />
+                    <Trash2 size={16} />
                   </button>
                   <button
                     onClick={async () => {
@@ -254,8 +253,7 @@ export default function CourseHierarchyManager() {
 
                         Swal.fire(
                           "Updated",
-                          `Category has been ${
-                            cat.isPublished ? "Unpublished" : "Published"
+                          `Category has been ${cat.isPublished ? "Unpublished" : "Published"
                           }`,
                           "success"
                         );
@@ -269,11 +267,10 @@ export default function CourseHierarchyManager() {
                         );
                       }
                     }}
-                    className={`px-3 py-1 rounded font-medium transition ${
-                      cat.isPublished
-                        ? "bg-red-500 hover:bg-red-600 text-white" // 🔴 Unpublish button
-                        : "bg-green-500 hover:bg-green-600 text-white" // 🟢 Publish button
-                    }`}
+                    className={`px-3 py-1 rounded font-medium transition ${cat.isPublished
+                      ? "bg-red-500 hover:bg-red-600 text-white" // 🔴 Unpublish button
+                      : "bg-green-500 hover:bg-green-600 text-white" // 🟢 Publish button
+                      }`}
                   >
                     {cat.isPublished ? "Unpublish" : "Publish"}
                   </button>

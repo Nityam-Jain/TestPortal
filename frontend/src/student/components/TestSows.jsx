@@ -82,7 +82,7 @@ const handleTakeTest = (testId, testTitle) => {
   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
   onClick={() => handleTakeTest(test._id, test.title)}
 >
-  Take Test
+  Start Test
 </button>
         </div>
       ))}

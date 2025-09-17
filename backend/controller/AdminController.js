@@ -16,7 +16,7 @@ module.exports.adminLogin = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       await Admin.create({ email, password: hashedPassword });
     }
-
+  
     // Check login
     const admin = await Admin.findOne({ email });
     if (!admin) {
@@ -37,7 +37,7 @@ module.exports.adminLogin = async (req, res) => {
 
     res.status(200).json({ token });
   } catch (err) {
-    console.error("Login error:", err);
+    // console.error("Login error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -56,7 +56,7 @@ module.exports.getStats = async (req, res) => {
       total: userCount + vendorCount,
     });
   } catch (error) {
-    console.error("Error fetching stats:", error);
+    // console.error("Error fetching stats:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

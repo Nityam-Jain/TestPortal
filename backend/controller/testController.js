@@ -2,7 +2,6 @@ const Test = require("../models/testSchema");
 const Course = require("../models/Course");
 const Subject = require("../models/Subject");
 const Category = require("../models/Category");
-const Question = require("../models/Question");
 
 // Create Test
 module.exports.createTest = async (req, res) => {
@@ -20,7 +19,6 @@ module.exports.createTest = async (req, res) => {
       isPublic,
     } = req.body;
 
-    // Validate references
     const course = await Course.findById(courseId);
     const subject = await Subject.findById(subjectId);
     const category = await Category.findById(categoryId);
@@ -29,8 +27,7 @@ module.exports.createTest = async (req, res) => {
       return res.status(400).json({ message: "Invalid course/subject/category" });
     }
 
-    // Decide creator (comes from auth middleware)
-    let createdBy = req.user.role.toLowerCase(); // "admin" | "vendor"
+    let createdBy = req.user.role.toLowerCase();
     let vendorId = createdBy === "vendor" ? req.user.id : null;
 
     const test = new Test({
@@ -56,21 +53,17 @@ module.exports.createTest = async (req, res) => {
   }
 };
 
-// Get all tests (Admin/Vendor dashboard)
+// Get all tests
 module.exports.getAllTests = async (req, res) => {
-
   try {
     let filter = {};
 
     if (req.user.role === "vendor") {
-      filter.vendorId = req.user.id; // vendor sees only own tests
+      filter.vendorId = req.user.id;
     }
 
-    if (req.user.role === "user") {
-     if (req.user.vendorId) {
-  filter.vendorId = req.user.vendorId;
- 
-}
+    if (req.user.role === "user" && req.user.vendorId) {
+      filter.vendorId = req.user.vendorId;
     }
 
     const tests = await Test.find(filter)
@@ -82,16 +75,11 @@ module.exports.getAllTests = async (req, res) => {
     res.json(tests);
   } catch (error) {
     console.error("Error fetching tests:", error);
-    res.status(500).json({
-      message: "Failed to fetch tests",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Failed to fetch tests", error: error.message });
   }
 };
 
-
-
-// Get Public Tests (for users, filterable)
+// Get public tests
 module.exports.getPublicTests = async (req, res) => {
   try {
     const { courseId, subjectId, categoryId } = req.query;
@@ -113,43 +101,51 @@ module.exports.getPublicTests = async (req, res) => {
   }
 };
 
-// Get Single Test with questions
+// Get single test with questions populated
 module.exports.getTestById = async (req, res) => {
   try {
     const test = await Test.findById(req.params.id)
       .populate("courseId", "name description")
       .populate("subjectId", "name")
       .populate("categoryId", "name")
-      .populate("questions")
-      .populate("vendorId", "username email"); // vendor info
+      .populate({
+        path: "questions",
+        select: "questionText options correctAnswer courseId subjectId categoryId",
+        populate: [
+          { path: "courseId", select: "name" },
+          { path: "subjectId", select: "name" },
+          { path: "categoryId", select: "name" }
+        ]
+      })
+      .populate("vendorId", "username email");
 
     if (!test) return res.status(404).json({ message: "Test not found" });
 
     res.json(test);
   } catch (err) {
+    console.error("Error fetching test:", err);
     res.status(500).json({ message: "Error fetching test", error: err.message });
   }
 };
 
-// Update Test
+// Update test
 module.exports.updateTest = async (req, res) => {
   try {
     const test = await Test.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!test) return res.status(404).json({ message: "Test not found" });
-
     res.json(test);
   } catch (err) {
+    console.error("Error updating test:", err);
     res.status(500).json({ message: "Error updating test", error: err.message });
   }
 };
 
-// Delete Test
+// Delete test
 module.exports.deleteTest = async (req, res) => {
   try {
     const test = await Test.findById(req.params.id);
     if (!test) return res.status(404).json({ message: "Test not found" });
 
-    // Vendors can only delete their own tests
     if (req.user.role === "vendor" && test.vendorId.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this test" });
     }
@@ -157,7 +153,7 @@ module.exports.deleteTest = async (req, res) => {
     await test.deleteOne();
     res.json({ message: "Test deleted successfully" });
   } catch (err) {
+    console.error("Error deleting test:", err);
     res.status(500).json({ message: "Error deleting test", error: err.message });
   }
 };
-

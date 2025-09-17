@@ -94,3 +94,21 @@ exports.deleteQuestion = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getQuestionsByCategoryForStudent = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const questions = await Question.find({
+      categoryId,
+    })
+      .populate("courseId", "name")
+      .populate("subjectId", "name")
+      .populate("categoryId", "name");
+
+    res.json({ questions });
+  } catch (err) {
+    console.error("Error fetching questions for student:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Get all students of a vendor
+// Get all students of a vendor v 
 const getVendorStudents = async (req, res) => {
   try {
     const vendorId = req.user.id;

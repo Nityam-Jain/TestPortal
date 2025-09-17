@@ -144,7 +144,7 @@ return res.status(200).json({
 
     return res.status(404).json({ message: 'Account not found' });
 
-  } catch (err) {
+  } catch (err) { 
     console.log(err)
     res.status(500).json({ message: 'Login error', error: err.message });
   }

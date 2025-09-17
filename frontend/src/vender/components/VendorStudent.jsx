@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { Edit2, Trash2, Eye } from 'lucide-react';
 import {
   FaUser,
   FaEnvelope,
@@ -224,9 +224,9 @@ export default function VendorStudentManager({ vendorId }) {
                      
                       title="View Student"
                     >
-                      <FaEye />
+                      < Eye size={20} />
                     </button>
-                    <button
+                    <button 
                       onClick={() => {
                         setEditingStudent(s);
                         setFormData({
@@ -246,14 +246,14 @@ export default function VendorStudentManager({ vendorId }) {
                      "p-3 text-blue-600 hover:text-blue-700 p-2 rounded-md hover:bg-blue-100/80 flex items-center justify-center"
                       title="Edit Student"
                     >
-                      <FaEdit />
+                      <Edit2 size={20} />
                     </button>
                     <button
                       onClick={() => handleDelete(s._id)}
                       className="p-3 text-red-600 hover:text-red-700 p-2 rounded-md hover:bg-red-100/80 flex items-center justify-center"
                       title="Delete Student"
                     >
-                      <FaTrash />
+                      <Trash2 size={20} />
                     </button>
                   </td>
                 </tr>

@@ -127,7 +127,7 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
             <div className="mt-auto px-2">
               <button
                 onClick={onLogout}
-                className="w-full flex items-center pl-5 justify-center md:justify-start gap-2 bg-transparent text-black-600 hover:bg-red-100 hover:text-black-700 py-2 rounded-lg font-semibold transition-colors"
+                className="w-full flex items-center pl-5 justify-center md:justify-start gap-2 bg-transparent text-black-600 hover:bg-red-100 hover:text-red-700 py-2 rounded-lg font-semibold transition-colors"
               >
                 <LogOut className="w-5 h-5" />
                 {!collapsed && <span>Logout</span>}

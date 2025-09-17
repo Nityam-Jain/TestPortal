@@ -246,7 +246,7 @@ export default function QuestionManager() {
                     ))}
                   </ul>
                 </div>
-                <div className="mt-3 flex justify-between">
+                <div className="mt-3 flex justify-end">
                   <button
                     onClick={() => handleEdit(q)}
                     className="p-2 text-blue-500 hover:text-blue-700 rounded transition-p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"
@@ -257,7 +257,7 @@ export default function QuestionManager() {
                     onClick={() => handleDelete(q._id)}
                     className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={20} /> 
                   </button>
                 </div>
               </div>

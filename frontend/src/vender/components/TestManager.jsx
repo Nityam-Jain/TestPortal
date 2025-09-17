@@ -223,7 +223,7 @@ function TestManager() {
               </div>
             </div>
             {/* Action Buttons */}
-            <div className="flex flex-wrap justify-end gap-2 mt-4">
+            <div className="flex flex-wrap justify-end gap-3 mt-4">
               {/* Edit Button */}
               <button
                 onClick={() => {

@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { jwtDecode } from "jwt-decode";  
+
 
 export default function TakeTest() {
   const { testId } = useParams();
@@ -12,10 +14,26 @@ export default function TakeTest() {
   const [answers, setAnswers] = useState({});
   const [duration, setDuration] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [isTimeUp, setIsTimeUp] = useState(false); // New state to block further actions
-  const timerRef = useRef(null);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+  const [test, setTest] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // prevent multiple submits
 
+  const timerRef = useRef(null);
   const token = sessionStorage.getItem("userToken");
+
+  let userId = null;
+
+if (token) {
+  try {
+    const decoded = jwtDecode(token);
+    userId = decoded.id;  // 👈 use the "id" field from token
+  } catch (err) {
+    console.error("Invalid token:", err);
+  }
+}
+
+  // 🔹 Replace this with real logged-in student data
+  const student = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     const fetchTestAndQuestions = async () => {
@@ -24,8 +42,10 @@ export default function TakeTest() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const test = testRes.data;
-        const categoryId = test.categoryId?._id;
+        const testData = testRes.data;
+        setTest(testData);
+
+        const categoryId = testData.categoryId?._id;
 
         if (!categoryId) {
           Swal.fire("Error", "Test category not found", "error");
@@ -33,12 +53,15 @@ export default function TakeTest() {
           return;
         }
 
-        setDuration(test.duration || 0);
-        setTimeLeft((test.duration || 0) * 60);
+        setDuration(testData.duration || 0);
+        setTimeLeft((testData.duration || 0) * 60);
 
-        const questionsRes = await axios.get(`/api/questions/student/${categoryId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const questionsRes = await axios.get(
+          `/api/questions/student/${categoryId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         setQuestions(questionsRes.data.questions || []);
       } catch (err) {
@@ -52,12 +75,17 @@ export default function TakeTest() {
     fetchTestAndQuestions();
   }, [testId, token]);
 
-  // Timer countdown effect
+  // Timer countdown
   useEffect(() => {
     if (timeLeft <= 0 && duration > 0) {
       clearInterval(timerRef.current);
-      setIsTimeUp(true); // Block further attempts
-      Swal.fire("Time's Up", "Sorry, time’s up. You can no longer attempt the test.", "error");
+      setIsTimeUp(true);
+      Swal.fire(
+        "Time's Up",
+        "Sorry, time’s up. Auto-submitting your test.",
+        "info"
+      );
+      handleSubmit(); // auto-submit on timeout
     }
   }, [timeLeft, duration]);
 
@@ -67,8 +95,8 @@ export default function TakeTest() {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(timerRef.current);
-    } 
-  }, [duration]); 
+    }
+  }, [duration]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -77,16 +105,20 @@ export default function TakeTest() {
   };
 
   const handleAnswer = (qId, value) => {
-    if (isTimeUp) return; // Prevent selecting after time's up
+    if (isTimeUp) return;
     setAnswers({ ...answers, [qId]: value });
   };
 
   const handleNext = () => {
-    if (isTimeUp) return; // Prevent proceeding after time's up
+    if (isTimeUp) return;
 
     const q = questions[currentQ];
     if (!answers[q._id]) {
-      Swal.fire("Warning", "Please select an answer before proceeding", "warning");
+      Swal.fire(
+        "Warning",
+        "Please select an answer before proceeding",
+        "warning"
+      );
       return;
     }
 
@@ -97,25 +129,67 @@ export default function TakeTest() {
     }
   };
 
-  const handleSubmit = () => {
+  // 🔹 Submit test to backend
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     clearInterval(timerRef.current);
-    console.log("Submitted Answers:", answers);
-    Swal.fire("Test Completed!", "Your answers have been submitted.", "success").then(() => {
-      // navigate("/"); // Optionally redirect
-    });
+
+    if (!test) {
+      Swal.fire("Error", "Test data not loaded yet.", "error");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const formattedAnswers = Object.entries(answers).map(
+        ([questionId, selectedOption]) => ({
+          questionId,
+          answers: selectedOption,  // matches backend schema
+        })
+      );
+      if (!userId) {
+        Swal.fire("Error", "User session expired. Please login again.", "error");
+        setIsSubmitting(false);
+        navigate("/login");
+        return;
+      }
+      const res = await axios.post(
+        `http://localhost:5000/api/results/${testId}`, // use param directly
+        {
+          testId: testId,
+          studentId: userId,
+          answers: formattedAnswers,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      Swal.fire("Success", "Test submitted successfully!", "success");
+      navigate(`/result/${res.data.result.testId}?studentId=${student?._id}`);
+    } catch (err) {
+      console.error("Error submitting test:", err);
+      Swal.fire("Error", "Something went wrong while submitting.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (loading) return <p className="p-6 text-center text-lg">Loading questions...</p>;
-  if (!questions.length) return <p className="p-6 text-center text-lg">No questions available.</p>;
 
-  const q = questions[currentQ];
+  if (loading)
+    return <p className="p-6 text-center text-lg">Loading questions...</p>;
+  if (!questions.length)
+    return <p className="p-6 text-center text-lg">No questions available.</p>;
+
+  const q = questions[currentQ]; 
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-50 to-indigo-50 px-4">
       <div className="w-full max-w-3xl bg-white shadow-xl rounded-xl p-6 space-y-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-blue-700">Take the Test</h2>
-          <div className="text-lg font-medium text-red-600">Time Left: {formatTime(timeLeft)}</div>
+          <div className="text-lg font-medium text-red-600">
+            Time Left: {formatTime(timeLeft)}
+          </div>
         </div>
         <div className="text-gray-700 mb-4">
           <span className="font-semibold">Duration:</span> {duration} minutes
@@ -130,9 +204,10 @@ export default function TakeTest() {
             {q.options?.map((opt, idx) => (
               <label
                 key={idx}
-                className={`flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-blue-100 transition duration-200 ${
-                  answers[q._id] === opt ? "bg-blue-100 border-blue-500" : "border-gray-300"
-                } ${isTimeUp ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`flex items-center gap-3 p-3 border rounded cursor-pointer hover:bg-blue-100 transition duration-200 ${answers[q._id] === opt
+                  ? "bg-blue-100 border-blue-500"
+                  : "border-gray-300"
+                  } ${isTimeUp ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <input
                   type="radio"
@@ -152,17 +227,16 @@ export default function TakeTest() {
         <div className="text-center">
           <button
             onClick={handleNext}
-            disabled={isTimeUp}
-            className={`px-6 py-3 rounded transition duration-300 ${
-              isTimeUp
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }`}
+            disabled={isTimeUp || isSubmitting}
+            className={`px-6 py-3 rounded transition duration-300 ${isTimeUp || isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
           >
             {currentQ === questions.length - 1 ? "Submit Test" : "Next Question"}
           </button>
         </div>
       </div>
-    </div>  
+    </div>
   );
 }

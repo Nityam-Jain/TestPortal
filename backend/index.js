@@ -22,6 +22,11 @@ const path = require("path");
 
 const PORT = process.env.PORT || 5000;
 
+ app.use(cors({  
+  origin: "http://localhost:5173", // Your frontend URL
+  credentials: true,
+}));
+
 //reels--------------
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/reels", reelRoutes);
@@ -43,10 +48,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/results", resultRoutes);
 
 
- app.use(cors({  
-  origin: "http://localhost:5173", // Your frontend URL
-  credentials: true,
-}));
+
 
 // DB + Server Init
 mongoose.connect(process.env.MONGO_URI)

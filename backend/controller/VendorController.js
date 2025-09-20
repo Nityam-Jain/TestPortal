@@ -1,15 +1,13 @@
 const Vendor = require("../models/Vendor");
 const User = require("../models/Users");
-const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
 
-// Get all students of a vendor v 
+// Get all students of a vendor
 const getVendorStudents = async (req, res) => {
   try {
     const vendorId = req.user.id;
-    const students = await User.find({ vendorId: vendorId });
+    const students = await User.find({ vendorId: vendorId }).select("-password"); // hide password
     return res.status(200).json({ students });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -20,36 +18,52 @@ const getVendorStudents = async (req, res) => {
 const addStudent = async (req, res) => {
   try {
     const vendorId = req.user.id;
-    const { username, email, password, phone, gender, dob, grade, school } =
-      req.body;
+    const {
+      username,
+      email,
+      password,
+      phone,
+      gender,
+      dob,
+      grade,
+      institutionType,
+      institutionName,
+      stream,
+    } = req.body;
 
     // Check duplicates
     const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const profileImage = req.file ? req.file.filename : null;
 
     const user = await User.create({
       username,
       email,
-      password: hashedPassword,
+      password, 
       phone,
       gender,
       dob,
       grade,
-      school,
+      institutionType,
+      institutionName,
+      stream,
       profileImage: profileImage || null,
-      vendorId: vendorId,
+      vendorId,
     });
 
-    res.status(201).json({ message: "Student created successfully", user });
+    res
+      .status(201)
+      .json({ message: "Student created successfully", user: { ...user._doc, password: undefined } });
   } catch (err) {
+    console.error("❌ Add Student Error:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
+// Edit student
 const editStudent = async (req, res) => {
   try {
     const vendorId = req.user.id;
@@ -57,42 +71,32 @@ const editStudent = async (req, res) => {
 
     const updateData = { ...req.body };
 
-    // ✅ Prevent duplicate username
-    if (updateData.username) {
-      const existingUser = await User.findOne({
-        username: updateData.username,
-        _id: { $ne: studentId }, // exclude the current student
-      });
-      if (existingUser) {
-        return res.status(400).json({ message: "Username already taken" });
-      }
-    }
-
+    // If password is included, it will be hashed on save
     if (req.file) {
       updateData.profileImage = req.file.filename;
     }
 
-    const student = await User.findOneAndUpdate(
-      { _id: studentId, vendorId: vendorId },
-      { $set: updateData },
-      { new: true }
-    );
-
+    let student = await User.findOne({ _id: studentId, vendorId });
     if (!student) {
       return res
         .status(404)
         .json({ message: "Student not found or not authorized" });
     }
 
-    res.status(200).json({ message: "Student updated successfully", student });
+    Object.assign(student, updateData);
+    await student.save(); // ensures password is hashed again if updated
+
+    res.status(200).json({
+      message: "Student updated successfully",
+      student: { ...student._doc, password: undefined },
+    });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Edit Student Error:", err);
     res.status(500).json({ message: err.message });
   }
 };
 
-
-// Delete student (by vendor)
+// Delete student
 const deleteStudent = async (req, res) => {
   try {
     const vendorId = req.user.id;
@@ -100,16 +104,18 @@ const deleteStudent = async (req, res) => {
 
     const student = await User.findOneAndDelete({
       _id: studentId,
-      vendorId: vendorId,
+      vendorId,
     });
 
-    if (!student)
+    if (!student) {
       return res
         .status(404)
         .json({ message: "Student not found or not authorized" });
+    }
 
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (err) {
+    console.error("❌ Delete Student Error:", err);
     res.status(500).json({ message: err.message });
   }
 };

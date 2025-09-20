@@ -41,10 +41,10 @@ const [activeView, setActiveView] = useState("AdminStats");
         ml-0 ${collapsed ? "md:ml-16" : "md:ml-64"}`}
       >
         {activeView === "AdminStats" && <AdminStats/>}
-        {activeView === "ManageCourses" && <CourseHierarchyManager/>}
+        {/* {activeView === "ManageCourses" && <CourseHierarchyManager/>} */}
         {activeView === "AdminUsers" && < AdminUsers/>}
         {activeView === "AdminVendors" && <AdminVendors/>}
-        {activeView === "ReelsManager" && <ReelsManager/>}
+        {/* {activeView === "ReelsManager" && <ReelsManager/>} */}
      
       </main>
     </div>

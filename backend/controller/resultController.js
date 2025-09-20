@@ -6,8 +6,7 @@ const Question = require("../models/Question");
 exports.submitResult = async (req, res) => {
   try {
     const { testId } = req.params;
-    const { answers } = req.body;
-    const studentId = req.user.id; // from authMiddleware
+    const { answers, studentId } = req.body; // ✅ take studentId from body
 
     // 1. Get test details
     const test = await Test.findById(testId);
@@ -35,11 +34,12 @@ exports.submitResult = async (req, res) => {
       testId,
       answers: answers.map(ans => ({
         questionId: ans.questionId,
-        answer: ans.answer
+        answers: ans.answers,  // ✅ matches schema
       })),
       score,
       totalMarks
     });
+
 
     await result.save();
 
@@ -54,7 +54,7 @@ exports.submitResult = async (req, res) => {
 exports.getResult = async (req, res) => {
   try {
     const { testId } = req.params;
-    const studentId = req.user.id; // from authMiddleware
+    const { studentId } = req.query; // ✅ take studentId from query for now
 
     const result = await Result.findOne({ testId, studentId })
       .populate("testId", "name duration totalMarks")

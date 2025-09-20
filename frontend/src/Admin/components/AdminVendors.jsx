@@ -147,12 +147,12 @@ export default function AdminVendors() {
 
             {/* Footer */}
             <div className="mt-6 flex justify-end">
-              <button
+              {/* <button
                 onClick={() => setSelectedVendor(null)}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 Close
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

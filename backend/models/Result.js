@@ -6,7 +6,7 @@ const resultSchema = new mongoose.Schema({
   answers: [
     {
       questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
-      answer: { type: String, required: true }
+      answers: { type: String, required: true }
     }
   ],
   score: { type: Number, required: true },

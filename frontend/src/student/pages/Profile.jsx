@@ -22,7 +22,8 @@ const Profile = () => {
     gender: "",
     dob: "",
     grade: "",
-    school: "",
+    institutionType: "",
+    institutionName: "",
   });
 
   useEffect(() => {
@@ -80,21 +81,20 @@ const Profile = () => {
         Edit
       </button>
 
-
       {/* Layout */}
       <div className="grid md:grid-cols-3 gap-8 items-center">
         {/* Left: Profile Pic & Basic Info */}
-        <div className="  rounded-xl shadow-md p-6 flex flex-col items-center text-center border border-blue-300">
+        <div className="rounded-xl shadow-md p-6 flex flex-col items-center text-center border border-blue-300">
           <img
             src={`/uploads/${profile.profileImage}`}
             alt="Profile"
-            className="w-40 h-40 rounded-full object-cover    shadow-lg"
+            className="w-40 h-40 rounded-full object-cover shadow-lg"
           />
           <h2 className="mt-4 text-2xl font-bold text-blue-800 flex items-center gap-2">
             <UserRound className="w-6 h-6" />
             {profile.username || "Unnamed"}
           </h2>
-          <p className="text-blue-500 flex items-center  gap-2 mt-1">
+          <p className="text-blue-500 flex items-center gap-2 mt-1">
             <Mail className="w-4 h-4" />
             {profile.email || "N/A"}
           </p>
@@ -107,7 +107,7 @@ const Profile = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             {[
               {
-                icon: <Phone className="w-5 h-5 text-blue-500 " />,
+                icon: <Phone className="w-5 h-5 text-blue-500" />,
                 label: "Phone",
                 value: profile.phone || "N/A",
               },
@@ -128,13 +128,18 @@ const Profile = () => {
               },
               {
                 icon: <School className="w-5 h-5 text-blue-500" />,
-                label: "School",
-                value: profile.school || "N/A",
+                label: "Institution Type",
+                value: profile.institutionType || "N/A",
+              },
+              {
+                icon: <School className="w-5 h-5 text-blue-500" />,
+                label: "Institution Name",
+                value: profile.institutionName || "N/A",
               },
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-lg border  border-blue-300 p-4 flex items-center gap-3 shadow-bd hover:shadow-lg transition"
+                className="bg-white rounded-lg border border-blue-300 p-4 flex items-center gap-3 shadow-bd hover:shadow-lg transition"
               >
                 {item.icon}
                 <div>
@@ -229,22 +234,39 @@ const Profile = () => {
                   className="border w-full p-2 rounded-md focus:outline-none focus:border-blue-500"
                   required
                 >
-                  <option value="Other">Selecct Class</option>
-                  <option value="Other">10th</option>
-                  <option value="Other">12th</option>
-                  <option value="Other">Collage</option>
+                  <option value="">Select Class</option>
+                  <option value="10th">10th</option>
+                  <option value="11th">11th</option>
+                  <option value="12th">12th</option>
+                  <option value="College">College</option>
                 </select>
               </div>
               <div>
                 <label className="block text-md font-semibold text-gray-700 mb-1">
-                  School Name
+                  Institution Type
+                </label>
+                <select
+                  name="institutionType"
+                  value={formData.institutionType}
+                  onChange={handleChange}
+                  className="border w-full p-2 rounded-md focus:outline-none focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select Type</option>
+                  <option value="School">School</option>
+                  <option value="College">College</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-md font-semibold text-gray-700 mb-1">
+                  Institution Name
                 </label>
                 <input
                   type="text"
-                  name="school"
-                  value={formData.school}
+                  name="institutionName"
+                  value={formData.institutionName}
                   onChange={handleChange}
-                  placeholder="School"
+                  placeholder="Institution Name"
                   className="border p-2 w-full rounded-md focus:outline-none focus:border-blue-500"
                   required
                 />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, User, LogOut, Home, LayoutDashboard, FileText } from "lucide-react";
+import { Menu, User, LogOut, LayoutDashboard, FileText } from "lucide-react";
+import axios from "axios";
 import StudentProfile from "./Profile";
 // import Test from "../components/Test";
 import TestSows from "../components/TestSows";
@@ -9,11 +10,24 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("Dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState("User");
 
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
     if (!token) {
       navigate("/login");
+    } else {
+      // 👇 Fetch profile to get username
+      axios
+        .get("/api/auth/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setUserName(res.data.username || "User");
+        })
+        .catch((err) => {
+          console.error("Error fetching profile:", err);
+        });
     }
   }, [navigate]);
 
@@ -26,8 +40,8 @@ const Dashboard = () => {
   // Sections except "Home"
   const sections = [
     { name: "Dashboard", icon: LayoutDashboard },
-    { name: "Profile", icon: User },
     { name: "My Test", icon: FileText },
+    { name: "Profile", icon: User },
   ];
 
   return (
@@ -37,7 +51,13 @@ const Dashboard = () => {
         <button onClick={() => setIsSidebarOpen(true)}>
           <Menu className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-bold">Hi, User</h1>
+        {/* 👇 Dynamic username with redirect */}
+        <h1
+          className="text-lg font-bold cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          Hi, {userName}
+        </h1>
       </div>
 
       {/* Sidebar */}
@@ -55,24 +75,15 @@ const Dashboard = () => {
 
         {/* Sidebar Content */}
         <div className="mt-10 md:mt-0">
-          <h1 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            Hi, User
+          {/* 👇 Dynamic username with redirect */}
+          <h1
+            className="text-2xl font-bold mb-6 flex items-center gap-2 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Hi, {userName}
           </h1>
 
           <nav className="space-y-2">
-            {/* Home button at the top */}
-            <button
-              onClick={() => {
-                navigate("/");
-                setIsSidebarOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-4 py-2 rounded-md hover:bg-[#354b61]`}
-            >
-              <Home className="w-5 h-5" />
-              Home
-            </button>
-
-            {/* Other sections */}
             {sections.map((section) => {
               const Icon = section.icon;
               return (
@@ -124,7 +135,6 @@ const Dashboard = () => {
 
         {activeSection === "Dashboard" && (
           <div className="max-w-7xl">
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[{ title: "Total Tests", value: 24 }, { title: "Completed", value: 16 }, { title: "Pending", value: 8 }].map(
                 ({ title, value }) => (
@@ -141,7 +151,6 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Recent Activity */}
             <div className="mt-10">
               <h3 className="text-xl font-semibold text-[#1B3C53] mb-4">
                 Recent Activity
@@ -153,9 +162,8 @@ const Dashboard = () => {
           </div>
         )}
 
-        {activeSection === "Profile" && <StudentProfile />}
         {activeSection === "My Test" && <TestSows />}
-        {/* {activeSection === "Tests" && <Test />} */}
+        {activeSection === "Profile" && <StudentProfile />}
       </main>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   BookOpen,
   Star,
   UsersRound,
+  Building,
   UserSearch,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -20,10 +21,10 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
 
   const navItems = [
      { label: "Admin Stats", icon: Users, view: "AdminStats" },
-     { label: "All Vendor", icon: UserSearch, view: "AdminVendors" },
-     { label: "All Users", icon: UserSearch, view: "AdminUsers" },
-    { label: "Manage Courses", icon: BookOpen, view: "ManageCourses" },
-    { label: "Manage Reels", icon: BookOpen, view: "ReelsManager" },
+     { label: "All Institutes", icon: Building , view: "AdminVendors" },
+     { label: "All Students", icon: UserSearch, view: "AdminUsers" },
+    // { label: "Manage Courses", icon: BookOpen, view: "ManageCourses" },
+    // { label: "Manage Reels", icon: BookOpen, view: "ReelsManager" },
   ];
  
   return (

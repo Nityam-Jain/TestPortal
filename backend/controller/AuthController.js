@@ -38,7 +38,9 @@ const UserSignup = async (req, res) => {
     gender,
     dob,
     grade,
-    school,
+    institutionType,
+    institutionName,
+    stream,
     password,
     vendorId,
 
@@ -68,10 +70,13 @@ const UserSignup = async (req, res) => {
       gender,
       dob: new Date(new Date(dob).toDateString()),
       grade,
-      school,
+       institutionType,   // ✅ fixed
+      institutionName,   // ✅ fixed
+      stream, 
       profileImage: profileImage || null,
       vendorId: vendorId || null,
-      password: hashedPassword,
+      password, 
+      role: "user", 
     });
 
     res.status(201).json({ message: "User registered successfully", role: user.role });

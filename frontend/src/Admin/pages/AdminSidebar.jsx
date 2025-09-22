@@ -6,6 +6,13 @@ import {
   HexagonIcon,
   Menu,
   X,
+  Image,
+  Landmark,
+  Briefcase,
+  BookMarked,
+  MessageCircle,
+  Podcast,
+  BadgeIndianRupee,
   BookOpen,
   Star,
   UsersRound,
@@ -18,19 +25,23 @@ import { useNavigate } from "react-router-dom";
 function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setCollapsed }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // mobile toggle
+  const [subscriptionOpen, setSubscriptionOpen] = useState(false); // dropdown toggle
 
   const navItems = [
-     { label: "Admin Stats", icon: Users, view: "AdminStats" },
-     { label: "All Institutes", icon: Building , view: "AdminVendors" },
-     { label: "All Students", icon: UserSearch, view: "AdminUsers" },
-    // { label: "Manage Courses", icon: BookOpen, view: "ManageCourses" },
-    // { label: "Manage Reels", icon: BookOpen, view: "ReelsManager" },
+    { label: "Admin Stats", icon: Users, view: "AdminStats" },
+    { label: "All Institutes", icon: Landmark, view: "AdminVendors" },
+    { label: "All Students", icon: UserSearch, view: "AdminUsers" },
+    { label: "Custom Banner", icon: Image, view: "CustomBanner" },
+    { label: "Transactions", icon: BadgeIndianRupee, view: "Transactions" },
+    { label: "Services", icon: Briefcase, view: "Services" },
+    { label: "Blogs", icon: BookMarked, view: "Blogs" },
+    { label: "Query", icon: MessageCircle, view: "Query" },
   ];
- 
+
   return (
     <>
       {/* Mobile Topbar */}
-      <div className="md:hidden  fixed w-full flex justify-between items-center bg-[#1B3C53] text-white p-4 z-50">
+      <div className="md:hidden fixed w-full flex justify-between items-center bg-[#1B3C53] text-white p-4 z-50">
         <h2 className="text-xl font-bold">Admin Panel</h2>
         <button onClick={() => setIsOpen(true)}>
           <Menu size={28} />
@@ -39,7 +50,7 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
 
       {/* Overlay for mobile */}
       <div
-        className={`fixed  inset-0 z-40 bg-black/50 bg-opacity-40 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-black/50 bg-opacity-40 md:hidden transition-opacity duration-300 ${
           isOpen ? "block" : "hidden"
         }`}
         onClick={() => setIsOpen(false)}
@@ -94,6 +105,66 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                   )}
                 </button>
               ))}
+
+              {/* Subscription Dropdown */}
+              <div>
+                <button
+                  onClick={() => setSubscriptionOpen(!subscriptionOpen)}
+                  className={`flex items-center gap-3 px-3 py-2 w-full rounded-lg transition-all text-left
+                    ${
+                      activeView.startsWith("Subscription")
+                        ? "bg-[#2E5A72] text-white"
+                        : "hover:bg-gray-100 text-gray-700"
+                    }`}
+                >
+                  <Podcast className="w-5 h-5" />
+                  {!collapsed && (
+                    <span className="flex-1 text-sm font-medium">
+                      Subscription
+                    </span>
+                  )}
+                  {!collapsed && (
+                    <ChevronRight
+                      className={`h-4 w-4 transition-transform ${
+                        subscriptionOpen ? "rotate-90" : ""
+                      }`}
+                    />
+                  )}
+                </button>
+
+                {subscriptionOpen && !collapsed && (
+                  <div className="ml-8 mt-1 flex flex-col gap-1">
+                    <button
+                      onClick={() => {
+                        setActiveView("AddSubscriptionPlan");
+                        setIsOpen(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-md text-sm text-left
+                        ${
+                          activeView === "AddSubscriptionPlan"
+                            ? "bg-[#2E5A72] text-white"
+                            : "hover:bg-gray-100 text-gray-700"
+                        }`}
+                    >
+                      Add Subscription Plan
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveView("AllSubscriptionPlans");
+                        setIsOpen(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-md text-sm text-left
+                        ${
+                          activeView === "AllSubscriptionPlans"
+                            ? "bg-[#2E5A72] text-white"
+                            : "hover:bg-gray-100 text-gray-700"
+                        }`}
+                    >
+                      All Subscription Plans
+                    </button>
+                  </div>
+                )}
+              </div>
             </nav>
 
             {/* Collapse Btn (desktop only) */}

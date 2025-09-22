@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateToken = (id, role) =>
   jwt.sign({ id, role }, JWT_SECRET, { expiresIn: '7d' });
-
+ 
 
 const signupVendor = async (req, res) => {
   const { username, email, mobile, address, businessName, idProofName, idProofNumber, password } = req.body;

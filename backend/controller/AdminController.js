@@ -60,7 +60,7 @@ module.exports.getStats = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
+//get all users
  module.exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
@@ -70,6 +70,45 @@ module.exports.getStats = async (req, res) => {
   }
 };
 
+// Update user by ID (excluding password)
+module.exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Ensure password is not updated
+    if (req.body.password) delete req.body.password;
+
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update user" });
+  }
+};
+
+
+// Delete user by ID
+module.exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete user" });
+  }
+};
+
+
+
+//get vendor details
  module.exports. getAllVendors = async (req, res) => {
   try {
     const vendors = await Vendor.find().select("-password");
@@ -79,3 +118,37 @@ module.exports.getStats = async (req, res) => {
   }
 };
 
+// ✅ Update vendor by ID
+module.exports.updateVendor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedVendor = await Vendor.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    if (!updatedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json(updatedVendor);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update vendor" });
+  }
+};
+
+// ✅ Delete vendor by ID
+module.exports.deleteVendor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedVendor = await Vendor.findByIdAndDelete(id);
+
+    if (!deletedVendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    res.status(200).json({ message: "Vendor deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete vendor" });
+  }
+};

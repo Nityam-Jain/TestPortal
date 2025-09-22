@@ -7,7 +7,7 @@ export default function AdminBanner() {
   const [showUpload, setShowUpload] = useState(false);
   const [file, setFile] = useState(null);
 
-  // Fetch banners
+  // Fetch banners  
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -60,7 +60,7 @@ export default function AdminBanner() {
           Banner Manager
         </h2>
         <button
-          className="px-4 py-2 border border-green-500 text-green-600 rounded-lg hover:bg-green-50 flex items-center gap-2"
+          className="px-4 py-2 border border-slate-500 text-slate-600 rounded-lg hover:bg-white-700 flex items-center gap-2"
           onClick={() => setShowUpload(true)}
         >
           <Plus size={18} /> Add Banner

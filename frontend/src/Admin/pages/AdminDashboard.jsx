@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
-import AdminStats from "../components/AdminStats";
+import Dashboard from "../components/AdminStats";
 import AdminVendors from "../components/AdminVendors";
 import ReelsManager from "../components/ReelsManager";
 import AdminUsers from "../components/AdminUsers";
@@ -45,7 +45,7 @@ function AdminDashboard() {
         className={`transition-all duration-300 flex-1 p-4 pt-9 md:p-6
         ml-0 ${collapsed ? "md:ml-16" : "md:ml-64"}`}
       >
-        {activeView === "AdminStats" && <AdminStats />}
+        {activeView === "Dashboard" && <Dashboard />}
         {activeView === "AdminUsers" && <AdminUsers />}
         {activeView === "AdminVendors" && <AdminVendors />}
         {activeView === "CustomBanner" && <CustomBanner />}

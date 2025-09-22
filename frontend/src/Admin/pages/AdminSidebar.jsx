@@ -1,6 +1,7 @@
 import {
   LayoutDashboard,
   Users,
+  House,
   LogOut,
   ChevronRight,
   HexagonIcon,
@@ -28,7 +29,7 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
   const [subscriptionOpen, setSubscriptionOpen] = useState(false); // dropdown toggle
 
   const navItems = [
-    { label: "Admin Stats", icon: Users, view: "AdminStats" },
+    { label: "Dashboard", icon: House, view: "Dashboard" },
     { label: "All Institutes", icon: Landmark, view: "AdminVendors" },
     { label: "All Students", icon: UserSearch, view: "AdminUsers" },
     { label: "Custom Banner", icon: Image, view: "CustomBanner" },

@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   BookOpen,
 } from "lucide-react"; 
+import axios from "axios";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -25,20 +26,32 @@ const ContactUs = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    Swal.fire({
-      icon: "success",
-      title: "Message Sent",
-      text: "Thank you for contacting us. We’ll be in touch shortly.",
-    });
 
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+    try {
+      const res = await axios.post("/api/contact", formData);
+
+      Swal.fire({
+        icon: "success",
+        title: "Message Sent",
+        text: res.data.message,
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (err) {
+      console.error("Contact submit error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: err.response?.data?.error || "Failed to send message",
+      });
+    }
   };
 
   return (

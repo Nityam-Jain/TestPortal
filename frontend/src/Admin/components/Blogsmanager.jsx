@@ -1,150 +1,310 @@
-import React, { useState } from "react";
-import { Trash2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Trash2, Plus, Pencil } from "lucide-react";
 
-const Blogs = () => {
-  // Sample blog data
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      title: "The Future of Web Development",
-      author: "Admin",
-      date: "2025-09-22",
-      content:
-        "Web development is evolving rapidly with frameworks like React, Next.js, and AI integrations leading the way...",
-    },
-    {
-      id: 2,
-      title: "Why TailwindCSS is Popular",
-      author: "Admin",
-      date: "2025-09-20",
-      content:
-        "TailwindCSS provides utility-first classes, making styling faster and more consistent for developers...",
-    },
-  ]);
-
-  // Form states for adding new blog
+const BlogsManager = () => {
+  const [blogs, setBlogs] = useState([]);
   const [newBlog, setNewBlog] = useState({
     title: "",
+    highlight: "",
     author: "",
+    category: "General",
+    readTime: "",
     content: "",
+    image: "",
   });
+  const [editingBlog, setEditingBlog] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Handle form input
+  const categories = ["General", "Technology", "Business", "Design", "Education", "Other"];
+
+  // Fetch blogs
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await axios.get("/api/blogs");
+        setBlogs(res.data);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+      }
+    };
+    fetchBlogs();
+  }, []);
+
   const handleChange = (e) => {
     setNewBlog({ ...newBlog, [e.target.name]: e.target.value });
   };
 
-  // Add blog
-  const handleAddBlog = (e) => {
+  const handleAddBlog = async (e) => {
     e.preventDefault();
     if (!newBlog.title || !newBlog.author || !newBlog.content) return;
 
-    const newEntry = {
-      id: blogs.length + 1,
-      title: newBlog.title,
-      author: newBlog.author,
-      date: new Date().toISOString().split("T")[0],
-      content: newBlog.content,
-    };
+    try {
+      let res;
+      // Check if image is a File
+      if (newBlog.image instanceof File) {
+        const formData = new FormData();
+        formData.append("image", newBlog.image);
+        formData.append("title", newBlog.title);
+        formData.append("highlight", newBlog.highlight);
+        formData.append("author", newBlog.author);
+        formData.append("category", newBlog.category);
+        formData.append("readTime", newBlog.readTime);
+        formData.append("content", newBlog.content);
 
-    setBlogs([newEntry, ...blogs]);
-    setNewBlog({ title: "", author: "", content: "" });
+        if (editingBlog) {
+          res = await axios.put(`/api/blogs/${editingBlog._id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        } else {
+          res = await axios.post("/api/blogs", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      } else {
+        // Image is a URL string
+        const payload = {
+          title: newBlog.title,
+          highlight: newBlog.highlight,
+          author: newBlog.author,
+          category: newBlog.category,
+          readTime: newBlog.readTime,
+          content: newBlog.content,
+          image: newBlog.image || "",
+        };
+
+        if (editingBlog) {
+          res = await axios.put(`/api/blogs/${editingBlog._id}`, payload);
+        } else {
+          res = await axios.post("/api/blogs", payload);
+        }
+      }
+
+      if (editingBlog) {
+        setBlogs(blogs.map((b) => (b._id === editingBlog._id ? res.data : b)));
+        setEditingBlog(null);
+      } else {
+        setBlogs([res.data, ...blogs]);
+      }
+
+      setShowModal(false);
+      setNewBlog({
+        title: "",
+        highlight: "",
+        author: "",
+        category: "General",
+        readTime: "",
+        content: "",
+        image: "",
+      });
+    } catch (err) {
+      console.error("Error saving blog:", err);
+    }
   };
 
-  // Delete blog
-  const handleDelete = (id) => {
-    setBlogs(blogs.filter((blog) => blog.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/blogs/${id}`);
+      setBlogs(blogs.filter((blog) => blog._id !== id));
+    } catch (err) {
+      console.error("Error deleting blog:", err);
+    }
+  };
+
+  const handleEdit = (blog) => {
+    setEditingBlog(blog);
+    setNewBlog(blog);
+    setShowModal(true);
   };
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Manage Blogs</h2>
-
-      {/* Add Blog Form */}
-      <form
-        onSubmit={handleAddBlog}
-        className="bg-white shadow-md rounded-lg p-4 mb-6"
-      >
-        <h3 className="text-lg font-semibold mb-3">Create New Blog</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={newBlog.title}
-            onChange={handleChange}
-            className="border rounded px-3 py-2 w-full focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <input
-            type="text"
-            name="author"
-            placeholder="Author"
-            value={newBlog.author}
-            onChange={handleChange}
-            className="border rounded px-3 py-2 w-full focus:outline-none focus:ring focus:ring-blue-300"
-          />
-        </div>
-        <textarea
-          name="content"
-          placeholder="Content"
-          rows="4"
-          value={newBlog.content}
-          onChange={handleChange}
-          className="border rounded px-3 py-2 w-full mb-4 focus:outline-none focus:ring focus:ring-blue-300"
-        ></textarea>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Blogs</h2>
         <button
-          type="submit"
-          className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800"
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
         >
-          Add Blog
+          <Plus size={18} /> {editingBlog ? "Edit Blog" : "Add Blog"}
         </button>
-      </form>
-
-      {/* Blog List */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-separate border-spacing-y-3">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-3">Title</th>
-              <th className="p-3">Author</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Content</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {blogs.map((blog) => (
-              <tr key={blog.id} className="bg-white shadow-sm rounded-lg">
-                <td className="p-3 font-medium">{blog.title}</td>
-                <td className="p-3">{blog.author}</td>
-                <td className="p-3">{blog.date}</td>
-                <td className="p-3 text-gray-700">
-                  {blog.content.length > 80
-                    ? blog.content.substring(0, 80) + "..."
-                    : blog.content}
-                </td>
-                <td className="p-3">
-                  <button
-                    onClick={() => handleDelete(blog.id)}
-                    className="flex items-center gap-1 bg-black text-white px-3 py-1.5 rounded-full text-sm hover:bg-red-700"
-                  >
-                    <Trash2 size={16} /> Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {blogs.length === 0 && (
-              <tr>
-                <td colSpan="5" className="text-center text-gray-500 p-4">
-                  No blogs available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
       </div>
+
+      {/* Blog Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {blogs.map((blog) => (
+          <div
+            key={blog._id}
+            className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
+          >
+            <img
+              src={typeof blog.image === "string" ? blog.image : ""}
+              alt={blog.title}
+              className="h-40 w-full object-cover"
+            />
+            <div className="p-4 flex-1 flex flex-col">
+              <h3 className="text-lg font-bold">{blog.title}</h3>
+              <p className="text-sm text-gray-600 mb-2">{blog.highlight}</p>
+              <p className="text-xs text-gray-500 mb-3">
+                By {blog.author} | {blog.category} | {blog.readTime} |{" "}
+                {blog.date?.split("T")[0]}
+              </p>
+              <p className="text-sm text-gray-700 flex-1">
+                {blog.content.length > 120
+                  ? blog.content.substring(0, 120) + "..."
+                  : blog.content}
+              </p>
+              <div className="mt-4 flex justify-between">
+                <button
+                  onClick={() => handleEdit(blog)}
+                  className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-full text-sm hover:bg-blue-700"
+                >
+                  <Pencil size={16} /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(blog._id)}
+                  className="flex items-center gap-1 bg-red-600 text-white px-3 py-1.5 rounded-full text-sm hover:bg-red-700"
+                >
+                  <Trash2 size={16} /> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {blogs.length === 0 && (
+          <p className="col-span-full text-center text-gray-500">
+            No blogs available.
+          </p>
+        )}
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-3xl rounded-xl shadow-lg p-6 relative">
+            <button
+              onClick={() => {
+                setShowModal(false);
+                setEditingBlog(null);
+              }}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-bold mb-6">
+              {editingBlog ? "Edit Blog" : "Create Blog"}
+            </h3>
+            <form onSubmit={handleAddBlog} className="grid gap-4">
+              {/* Row 1 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Blog Name</label>
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="Enter blog title"
+                    value={newBlog.title}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2 w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Highlighted Content</label>
+                  <input
+                    type="text"
+                    name="highlight"
+                    placeholder="Enter highlighted content"
+                    value={newBlog.highlight}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2 w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Author Name</label>
+                  <input
+                    type="text"
+                    name="author"
+                    placeholder="Enter author name"
+                    value={newBlog.author}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2 w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category</label>
+                  <select
+                    name="category"
+                    value={newBlog.category}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2 w-full"
+                  >
+                    {categories.map((cat, idx) => (
+                      <option key={idx} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Read Time</label>
+                  <input
+                    type="text"
+                    name="readTime"
+                    placeholder="e.g. 5 min"
+                    value={newBlog.readTime}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2 w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setNewBlog({ ...newBlog, image: e.target.files[0] })
+                    }
+                        className="border rounded px-3 py-2 w-full"
+                  />
+                  {/* <input
+                    type="text"
+                    placeholder="Or paste image URL"
+                    value={typeof newBlog.image === "string" ? newBlog.image : ""}
+                    onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
+                    className="border rounded px-3 py-2 w-full"
+                  /> */}
+                </div>
+              </div>
+              {/* Content */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Content</label>
+                <textarea
+                  name="content"
+                  placeholder="Enter blog content"
+                  rows="5"
+                  value={newBlog.content}
+                  onChange={handleChange}
+                  className="border rounded px-3 py-2 w-full"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                className="bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 mt-2"
+              >
+                {editingBlog ? "Update Blog" : "Create Blog"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Blogs;
+export default BlogsManager;

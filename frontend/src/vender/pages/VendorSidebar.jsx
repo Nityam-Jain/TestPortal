@@ -10,6 +10,7 @@ import {
   Settings,
   User,
   X,
+  BookOpen,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
@@ -34,6 +35,9 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
     <>
       {/* Mobile Topbar */}
       <div className="md:hidden fixed w-full flex justify-between items-center bg-[#1B3C53] text-white p-4">
+        <div className="w-8 h-8 bg-gradient-to-r from-[#1B3C53] to-[#456882] rounded-lg flex items-center justify-center shadow-md">
+          <BookOpen className="w-5 h-5 text-[#F9F3EF]" />
+        </div>
         <h2 className="text-xl font-bold">Dashboard</h2>
         <button onClick={() => setIsOpen(true)}>
           <Menu size={28} />
@@ -60,14 +64,20 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
           <div className="h-full flex flex-col px-3 py-6 relative">
             {/* Logo/Header */}
             <div className="flex items-center justify-between mb-10 px-3">
-              <div className="flex items-center gap-2">
-                <HexagonIcon className="w-6 h-6 text-[#1B3C53]" />
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => navigate("/")}
+              >
+                <div className="w-8 h-8 bg-gradient-to-r from-[#1B3C53] to-[#456882] rounded-lg flex items-center justify-center shadow-md">
+                  <BookOpen className="w-5 h-5 text-[#F9F3EF]" />
+                </div>
                 {!collapsed && (
                   <h2 className="text-2xl font-bold text-[#1B3C53]">
                     TestPortal
                   </h2>
                 )}
               </div>
+
 
               {/* Close Button in Mobile */}
               <button
@@ -85,10 +95,10 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
                 className="flex items-center gap-3 hover:text-[#D2C1B6] transition px-2"
                 onClick={() => setIsOpen(false)}
               >
-                <Home className="w-5 h-5" />
+                {/* <Home className="w-5 h-5" />
                 {!collapsed && (
                   <span className="text-base font-semibold">Go to Home</span>
-                )}
+                )} */}
               </Link>
 
               {navItems.map((item, idx) => (

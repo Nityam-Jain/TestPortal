@@ -6,7 +6,9 @@ import axios from "axios";
 const Services = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAdd, setShowAdd] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -41,8 +43,30 @@ const Services = () => {
     }
   };
 
-  // Add new service
-  const handleAdd = async (e) => {
+  // Open Add Modal
+  const openAddModal = () => {
+    setFormData({ name: "", description: "", price: "", highlights: "", image: null });
+    setIsEditing(false);
+    setEditId(null);
+    setShowModal(true);
+  };
+
+  // Open Edit Modal
+  const openEditModal = (service) => {
+    setFormData({
+      name: service.name,
+      description: service.description,
+      price: service.price,
+      highlights: service.highlights,
+      image: null, // user can upload a new one if needed
+    });
+    setIsEditing(true);
+    setEditId(service._id);
+    setShowModal(true);
+  };
+
+  // Add or Update Service
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = new FormData();
@@ -52,16 +76,31 @@ const Services = () => {
       data.append("highlights", formData.highlights);
       if (formData.image) data.append("image", formData.image, formData.name);
 
-      const res = await axios.post("/api/services", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setServices((prev) => [...prev, res.data]);
+      if (isEditing && editId) {
+        // Update API
+        const res = await axios.put(`/api/services/${editId}`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        setServices((prev) =>
+          prev.map((s) => (s._id === editId ? res.data : s))
+        );
+        Swal.fire("Success", "Service updated successfully", "success");
+      } else {
+        // Add API
+        const res = await axios.post("/api/services", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        setServices((prev) => [...prev, res.data]);
+        Swal.fire("Success", "Service added successfully", "success");
+      }
+
+      setShowModal(false);
       setFormData({ name: "", description: "", price: "", highlights: "", image: null });
-      setShowAdd(false);
-      Swal.fire("Success", "Service added successfully", "success");
+      setIsEditing(false);
+      setEditId(null);
     } catch (err) {
-      console.error("Add service error:", err);
-      Swal.fire("Error", "Failed to add service", "error");
+      console.error("Save service error:", err);
+      Swal.fire("Error", "Failed to save service", "error");
     }
   };
 
@@ -83,7 +122,7 @@ const Services = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Services</h2>
         <button
-          onClick={() => setShowAdd(true)}
+          onClick={openAddModal}
           className="px-4 py-2 bg-slate-600 text-white rounded-lg flex items-center gap-2 hover:bg-slate-700 transition"
         >
           <Plus size={18} /> Add Service
@@ -97,7 +136,7 @@ const Services = () => {
           {services.map((service) => (
             <div
               key={service._id}
-              className="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between"
+              className="bg-white rounded-xl shadow-md p-1 flex flex-col justify-between"
             >
               {service.image && (
                 <img
@@ -130,8 +169,10 @@ const Services = () => {
                   >
                     <Trash2 className="w-5 h-5 text-red-600" />
                   </button>
-                  {/* You can implement edit later */}
-                  <button className="p-2 hover:bg-blue-100/80 rounded">
+                  <button
+                    onClick={() => openEditModal(service)}
+                    className="p-2 hover:bg-blue-100/80 rounded"
+                  >
                     <Edit2 className="w-5 h-5 text-blue-600" />
                   </button>
                 </div>
@@ -141,12 +182,14 @@ const Services = () => {
         </div>
       )}
 
-      {/* Add Service Modal */}
-      {showAdd && (
+      {/* Add/Edit Service Modal */}
+      {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg w-96 relative">
-            <h3 className="text-xl font-semibold mb-4">Add Service</h3>
-            <form className="space-y-4" onSubmit={handleAdd}>
+            <h3 className="text-xl font-semibold mb-4">
+              {isEditing ? "Edit Service" : "Add Service"}
+            </h3>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <input
                 type="text"
                 name="name"
@@ -193,11 +236,11 @@ const Services = () => {
                 type="submit"
                 className="w-full py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition"
               >
-                Add Service
+                {isEditing ? "Update Service" : "Add Service"}
               </button>
             </form>
             <button
-              onClick={() => setShowAdd(false)}
+              onClick={() => setShowModal(false)}
               className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
             >
               ✕

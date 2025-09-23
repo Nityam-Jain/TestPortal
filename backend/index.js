@@ -13,6 +13,8 @@ const resultRoutes = require("./Routes/resultRoutes");
 const bannerRoutes = require("./Routes/bannerRoutes")
 const contactRoutes = require("./Routes/contactRoutes");
 const serviceRoutes = require("./Routes/serviceRoutes");
+const blogRoutes = require("./Routes/blogRoutes");
+
 
 
 const dotenv = require("dotenv");
@@ -56,6 +58,7 @@ app.use("/api/results", resultRoutes);
 app.use("/api/admin/banners", bannerRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/blogs", blogRoutes);
 
 
 

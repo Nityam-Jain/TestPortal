@@ -51,9 +51,8 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
 
       {/* Overlay for mobile */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 bg-opacity-40 md:hidden transition-opacity duration-300 ${
-          isOpen ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 z-40 bg-black/50 bg-opacity-40 md:hidden transition-opacity duration-300 ${isOpen ? "block" : "hidden"
+          }`}
         onClick={() => setIsOpen(false)}
       />
 
@@ -70,8 +69,9 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
             {/* Logo */}
             <div className="flex items-center justify-between mb-10 px-3">
               <div className="flex items-center gap-2">
-                <HexagonIcon className="w-6 h-6 text-[#1B3C53]" />
-                {!collapsed && (
+                <div className="w-8 h-8 bg-gradient-to-r from-[#1B3C53] to-[#456882] rounded-lg flex items-center justify-center shadow-md">
+                  <BookOpen className="w-5 h-5 text-[#F9F3EF]" />
+                </div>                {!collapsed && (
                   <h2 className="text-2xl font-bold text-[#1B3C53]">Admin</h2>
                 )}
               </div>
@@ -94,10 +94,9 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                     setIsOpen(false);
                   }}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left
-                    ${
-                      activeView === item.view
-                        ? "bg-[#2E5A72] text-white"
-                        : "hover:bg-gray-100 text-gray-700"
+                    ${activeView === item.view
+                      ? "bg-[#2E5A72] text-white"
+                      : "hover:bg-gray-100 text-gray-700"
                     }`}
                 >
                   <item.icon className="w-5 h-5" />
@@ -112,10 +111,9 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                 <button
                   onClick={() => setSubscriptionOpen(!subscriptionOpen)}
                   className={`flex items-center gap-3 px-3 py-2 w-full rounded-lg transition-all text-left
-                    ${
-                      activeView.startsWith("Subscription")
-                        ? "bg-[#2E5A72] text-white"
-                        : "hover:bg-gray-100 text-gray-700"
+                    ${activeView.startsWith("Subscription")
+                      ? "bg-[#2E5A72] text-white"
+                      : "hover:bg-gray-100 text-gray-700"
                     }`}
                 >
                   <Podcast className="w-5 h-5" />
@@ -126,9 +124,8 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                   )}
                   {!collapsed && (
                     <ChevronRight
-                      className={`h-4 w-4 transition-transform ${
-                        subscriptionOpen ? "rotate-90" : ""
-                      }`}
+                      className={`h-4 w-4 transition-transform ${subscriptionOpen ? "rotate-90" : ""
+                        }`}
                     />
                   )}
                 </button>
@@ -141,10 +138,9 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                         setIsOpen(false);
                       }}
                       className={`px-3 py-1.5 rounded-md text-sm text-left
-                        ${
-                          activeView === "AddSubscriptionPlan"
-                            ? "bg-[#2E5A72] text-white"
-                            : "hover:bg-gray-100 text-gray-700"
+                        ${activeView === "AddSubscriptionPlan"
+                          ? "bg-[#2E5A72] text-white"
+                          : "hover:bg-gray-100 text-gray-700"
                         }`}
                     >
                       Add Subscription Plan
@@ -155,10 +151,9 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                         setIsOpen(false);
                       }}
                       className={`px-3 py-1.5 rounded-md text-sm text-left
-                        ${
-                          activeView === "AllSubscriptionPlans"
-                            ? "bg-[#2E5A72] text-white"
-                            : "hover:bg-gray-100 text-gray-700"
+                        ${activeView === "AllSubscriptionPlans"
+                          ? "bg-[#2E5A72] text-white"
+                          : "hover:bg-gray-100 text-gray-700"
                         }`}
                     >
                       All Subscription Plans
@@ -174,9 +169,8 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
               className="absolute -right-3 top-24 hidden md:flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 shadow-sm transition"
             >
               <ChevronRight
-                className={`h-4 w-4 transition-transform ${
-                  collapsed ? "" : "rotate-180"
-                }`}
+                className={`h-4 w-4 transition-transform ${collapsed ? "" : "rotate-180"
+                  }`}
               />
             </button>
 

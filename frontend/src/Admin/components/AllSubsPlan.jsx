@@ -53,10 +53,10 @@ const AllSubscriptions = () => {
                 </td>
                 <td className="p-3 flex gap-2">
                   <button className="flex items-center gap-1 bg-black text-white px-3 py-1.5 rounded-full text-sm hover:bg-gray-800">
-                    <Edit size={16} /> Edit
+                    <Edit size={16} /> 
                   </button>
                   <button className="flex items-center gap-1 bg-black text-white px-3 py-1.5 rounded-full text-sm hover:bg-red-700">
-                    <Trash2 size={16} /> Delete
+                    <Trash2 size={16} /> 
                   </button>
                 </td>
               </tr>

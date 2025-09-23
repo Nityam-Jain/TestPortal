@@ -39,9 +39,9 @@ const AddSubscriptionPlan = () => {
               className="w-full border rounded-md p-2 focus:ring focus:ring-blue-300"
             >
               <option value="">Select a Plan</option>
-              <option value="basic">Basic</option>
+              <option value="basic">Free</option>
               <option value="standard">Standard</option>
-              <option value="premium">Premium</option>
+              <option value="premium">Pro</option>
             </select>
           </div>
 
@@ -92,7 +92,7 @@ const AddSubscriptionPlan = () => {
           </label>
           <textarea
             name="features"
-            placeholder="e.g. Unlimited Access, Priority Support"
+            placeholder="e.g. "
             value={formData.features}
             onChange={handleChange}
             rows="2"

@@ -314,72 +314,84 @@ export default function VendorStudentManager({ vendorId }) {
         <p>No students found.</p>
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-gray-200 rounded-lg shadow-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-5 py-4 text-left">Profile</th>
-                  <th className="px-5 py-4 text-left">Name</th>
-                  <th className="px-5 py-4 text-center hidden xl:table-cell">
-                    Email
-                  </th>
-                  <th className="px-5 py-4 text-left hidden xl:table-cell">
-                    Phone
-                  </th>
-                  <th className="px-5 py-4 text-center hidden xl:table-cell">
-                    Academic Stage
-                  </th>
-                  <th className="px-5 py-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentStudents.map((s) => (
-                  <tr
-                    key={s._id}
-                    className="bg-white hover:bg-gray-50 transition"
-                  >
-                    <td className="p-2 border-b">
-                      {s.profileImage ? (
-                        <img
-                          src={`/uploads/${s.profileImage}`}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full object-cover mx-auto"
-                        />
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 border-b font-medium">{s.username}</td>
-                    <td className="px-3 py-2 border-b hidden xl:table-cell text-center">
-                      {s.email}
-                    </td>
-                    <td className="px-3 py-2 border-b hidden xl:table-cell">{s.phone}</td>
-                    <td className="px-3 py-2 border-b hidden xl:table-cell text-center">{s.grade}</td>
-                    <td className="px-3 py-2 border-b flex justify-center space-x-2">
-                      <button
-                        onClick={() => setViewStudent(s)}
-                        className="p-3 text-green-600 hover:bg-green-100/80"
-                      >
-                        <Eye size={20} />
-                      </button>
-                      <button
-                        onClick={() => openEditForm(s)}
-                        className="p-3 text-blue-600 hover:bg-blue-100/80"
-                      >
-                        <Edit2 size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(s._id)}
-                        className="p-3 text-red-600 hover:bg-red-100/80"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    </td>
+          {/* <div className="p-4 md:p-6 bg-gray-50 min-h-screen"> */}
+            {/* <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
+              All Students
+            </h1> */}
+
+            <div className="overflow-x-auto rounded-lg shadow-lg bg-white">
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider">
+                      Profile
+                    </th>
+                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                      Email
+                    </th>
+                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                      Phone
+                    </th>
+                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                      Academic Stage
+                    </th>
+                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {currentStudents.map((s) => (
+                    <tr key={s._id} className="bg-white hover:bg-gray-50 transition">
+                      <td className="px-3 py-3">
+                        {s.profileImage ? (
+                          <img
+                            src={`/uploads/${s.profileImage}`}
+                            alt="Profile"
+                            className="w-10 h-10 rounded-full object-cover mx-auto"
+                          />
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 font-medium">{s.username}</td>
+                      <td className="px-3 py-3 text-center hidden xl:table-cell">
+                        {s.email}
+                      </td>
+                      <td className="px-3 py-3 hidden xl:table-cell">{s.phone}</td>
+                      <td className="px-3 py-3 text-center hidden xl:table-cell">
+                        {s.grade}
+                      </td>
+                      <td className="px-3 py-3 flex justify-center gap-3">
+                        <button
+                          onClick={() => setViewStudent(s)}
+                          className="p-2 hover:bg-green-100/80 rounded"
+                        >
+                          <Eye size={20} className="text-green-600" />
+                        </button>
+                        <button
+                          onClick={() => openEditForm(s)}
+                          className="p-2 hover:bg-blue-100/80 rounded"
+                        >
+                          <Edit2 size={20} className="text-blue-600" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(s._id)}
+                          className="p-2 hover:bg-red-100/80 rounded"
+                        >
+                          <Trash2 size={20} className="text-red-600" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          {/* </div> */}
+
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
@@ -389,8 +401,8 @@ export default function VendorStudentManager({ vendorId }) {
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-3 py-1 rounded ${currentPage === i + 1
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700"
                     }`}
                 >
                   {i + 1}

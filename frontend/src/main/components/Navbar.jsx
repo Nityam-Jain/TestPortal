@@ -79,12 +79,19 @@ function Navbar() {
               <NavLink to="/Pricing" className={navLinkClasses}>
                 Pricing
               </NavLink>
-              <NavLink to="/result" className={navLinkClasses}>
-                Result
+               <NavLink to="/Blogs" className={navLinkClasses}>
+                Blogs
               </NavLink>
+               <NavLink to="/Services" className={navLinkClasses}>
+                Services
+              </NavLink>
+              {/* <NavLink to="/result" className={navLinkClasses}>
+                Result
+              </NavLink> */}
               <NavLink to="/ContactPage" className={navLinkClasses}>
                 Contact
               </NavLink>
+              
               
             </nav>
 
@@ -162,13 +169,13 @@ function Navbar() {
               >
                 Home
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/result"
                 onClick={() => setIsMenuOpen(false)}
                 className="block hover:text-[#1B3C53]"
               >
                 Result
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/contact"
                 onClick={() => setIsMenuOpen(false)}

@@ -15,9 +15,10 @@ import Pricing from "./main/pages/Pricing/Pricing";
 import ContactPage from "./main/pages/ContactUs/ContactPage";
 import PublicTests from "./main/pages/Testpage/Publictest";
 import Spotlight from "./main/components/Spotligt";
+import Blogs from "./main/pages/Blogs";
+import Services from "./main/pages/services";
 import TakeTest from "./student/components/TakeTest";
 import ResultOverview from "./student/components/ResultOverview";
-
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
         <Route path="/result/:resultId" element={<ResultOverview />} />
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/Blogs" element={<Blogs />} />
+        <Route path="/Services" element={<Services />} />
       </Routes>
     </>
   );

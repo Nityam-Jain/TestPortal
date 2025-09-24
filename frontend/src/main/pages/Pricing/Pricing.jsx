@@ -1,49 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
-const pricingPlans = [
-  {
-    name: "Free",
-    price: "₹0",
-    description: "Ideal for students trying out TestPortal",
-    features: [
-      "Access to 5 mock tests",
-      "Basic performance report",
-      "Limited test categories",
-    ],
-    buttonText: "Get Started",
-    highlight: false,
-  },
-  {
-    name: "Standard",
-    price: "₹299/month",
-    description: "Perfect for regular test practice",
-    features: [
-      "Unlimited mock tests",
-      "Detailed performance analytics",
-      "All test categories unlocked",
-      "Email support",
-    ],
-    buttonText: "Upgrade Now",
-    highlight: true,
-  },
-  {
-    name: "Pro",
-    price: "₹599/month",
-    description: "Advanced features for serious learners",
-    features: [
-      "Everything in Standard",
-      "AI-based recommendations",
-      "1-on-1 mentorship sessions",
-      "Priority support",
-    ],
-    buttonText: "Go Pro",
-    highlight: false,
-  },
-];
-
 const Pricing = () => {
+  const [plans, setPlans] = useState([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/subscriptions");
+        setPlans(res.data);
+      } catch (err) {
+        console.error("Error fetching plans:", err);
+      }
+    };
+    fetchPlans();
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -59,38 +33,46 @@ const Pricing = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {pricingPlans.map((plan, index) => (
+          {plans.map((plan, index) => (
             <div
               key={index}
-              className={`rounded-2xl shadow-md p-8 border transition hover:scale-105 hover:shadow-xl ${
-                plan.highlight
+              className={`rounded-2xl shadow-md p-8 border transition hover:scale-105 hover:shadow-xl ${plan.planName === "Standard"
                   ? "bg-white border-[#456882]"
                   : "bg-[#fffdfb] border-[#D2C1B6]"
-              }`}
+                }`}
             >
-              <h3 className="text-xl font-bold text-[#1B3C53]">{plan.name}</h3>
+              <h3 className="text-xl font-bold text-[#1B3C53]">
+                {plan.planName.charAt(0).toUpperCase() + plan.planName.slice(1).toLowerCase()}
+              </h3>
+
               <p className="mt-2 text-3xl font-extrabold text-[#456882]">
-                {plan.price}
+                {plan.planName.toLowerCase() === "free"
+                  ? `₹${plan.price}`
+                  : `₹${plan.price}/month`}
               </p>
               <p className="mt-2 text-sm text-[#456882]">{plan.description}</p>
 
               <ul className="mt-6 space-y-3 text-sm text-[#1B3C53]">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="text-green-600">✓</span>
-                    {feature}
-                  </li>
-                ))}
+                {plan.features &&
+                  plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <span className="text-green-600">✓</span>
+                      {feature}
+                    </li>
+                  ))}
               </ul>
 
               <button
-                className={`mt-6 w-full py-3 rounded-xl font-semibold transition ${
-                  plan.highlight
+                className={`mt-6 w-full py-3 rounded-xl font-semibold transition ${plan.planName === "Standard"
                     ? "bg-[#456882] text-white hover:bg-[#1B3C53]"
                     : "bg-[#D2C1B6] text-[#1B3C53] hover:bg-[#e5d7ce]"
-                }`}
+                  }`}
               >
-                {plan.buttonText}
+                {plan.planName === "Free"
+                  ? "Get Started"
+                  : plan.planName === "Standard"
+                    ? "Upgrade Now"
+                    : "Go Pro"}
               </button>
             </div>
           ))}

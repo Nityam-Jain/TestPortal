@@ -105,19 +105,19 @@ export default function AdminVendors() {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Sr.
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Username
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Email
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Business Name
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-center px-4 py-3 font-medium text-gray-700 ">
                   Action
                 </th>
               </tr>

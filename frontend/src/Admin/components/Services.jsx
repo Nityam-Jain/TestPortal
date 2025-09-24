@@ -129,52 +129,62 @@ const Services = () => {
         </button>
       </div>
 
+
       {loading ? (
         <p className="text-gray-500">Loading services...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {services.map((service) => (
             <div
               key={service._id}
-              className="bg-white rounded-xl shadow-md p-1 flex flex-col justify-between"
+              className="relative bg-white rounded-2xl shadow-md overflow-hidden flex flex-col transition-transform duration-150 hover:-translate-y-2 hover:shadow-xl"
             >
+              {/* Service Badge */}
+              <div className="absolute top-3 left-3 z-10">
+                <span className="bg-blue-600 text-white font-medium text-xs px-3 py-1 rounded-full shadow">
+                  Service
+                </span>
+              </div>
+
+              {/* Image */}
               {service.image && (
                 <img
                   src={`/uploads/${service.image}`}
                   alt={service.name}
-                  className="h-40 w-full object-cover rounded-md mb-4"
+                  className="h-40 w-full object-cover"
                 />
               )}
-              <h3 className="text-lg font-semibold mb-2">{service.name}</h3>
-              <p className="text-gray-600 mb-2">{service.description}</p>
-              {service.highlights && (
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {service.highlights.split(",").map((h, i) => (
-                    <span
-                      key={i}
-                      className="bg-slate-200 text-slate-800 text-sm px-2 py-1 rounded-full"
-                    >
-                      {h.trim()}
-                    </span>
-                  ))}
-                </div>
-              )}
 
-              <div className="flex justify-between items-center mt-4">
-                <span className="font-semibold">₹{service.price}</span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleDelete(service._id)}
-                    className="p-2 hover:bg-red-100/80 rounded"
-                  >
-                    <Trash2 className="w-5 h-5 text-red-600" />
-                  </button>
-                  <button
-                    onClick={() => openEditModal(service)}
-                    className="p-2 hover:bg-blue-100/80 rounded"
-                  >
-                    <Edit2 className="w-5 h-5 text-blue-600" />
-                  </button>
+              {/* Content */}
+              <div className="p-4 flex-1 flex flex-col">
+                <h3 className="text-lg font-bold text-slate-800 mb-1">
+                  {service.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  {service.description}
+                </p>
+
+                {/* Price */}
+                <div className="flex justify-between items-center mt-auto">
+                  <span className="text-blue-700 font-semibold">
+                    ₹{service.price}
+                  </span>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEditModal(service)}
+                      className="p-2 rounded-lg hover:bg-blue-100 transition"
+                    >
+                      <Edit2 className="w-5 h-5 text-blue-600" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(service._id)}
+                      className="p-2 rounded-lg hover:bg-red-100 transition"
+                    >
+                      <Trash2 className="w-5 h-5 text-red-600" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -182,56 +192,95 @@ const Services = () => {
         </div>
       )}
 
+
+
       {/* Add/Edit Service Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-96 relative">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-[32rem] relative">
             <h3 className="text-xl font-semibold mb-4">
               {isEditing ? "Edit Service" : "Add Service"}
             </h3>
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="name"
-                placeholder="Service Name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
-              />
-              <textarea
-                name="description"
-                rows="3"
-                placeholder="Service Description"
-                required
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
-              />
-              <input
-                type="text"
-                name="highlights"
-                placeholder="Highlights (comma separated)"
-                value={formData.highlights}
-                onChange={handleChange}
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
-              />
-              <input
-                type="text"
-                name="price"
-                placeholder="Price"
-                required
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
-              />
-              <input
-                type="file"
-                name="image"
-                accept="image/*"
-                onChange={handleChange}
-                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
-              />
+
+              {/* Row 1: Service Name + Highlights */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Service Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter service name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Highlights
+                  </label>
+                  <input
+                    type="text"
+                    name="highlights"
+                    placeholder="Comma separated"
+                    value={formData.highlights}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Price + Upload Image */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Price
+                  </label>
+                  <input
+                    type="text"
+                    name="price"
+                    placeholder="Enter price"
+                    required
+                    value={formData.price}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Upload Image
+                  </label>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Service Description
+                </label>
+                <textarea
+                  name="description"
+                  rows="3"
+                  placeholder="Enter service description"
+                  required
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600"
+                />
+              </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition"
@@ -239,6 +288,8 @@ const Services = () => {
                 {isEditing ? "Update Service" : "Add Service"}
               </button>
             </form>
+
+            {/* Close Button */}
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-2 right-3 text-gray-500 hover:text-gray-700"
@@ -248,6 +299,7 @@ const Services = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

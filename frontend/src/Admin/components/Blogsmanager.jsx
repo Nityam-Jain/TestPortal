@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Trash2, Plus, Pencil } from "lucide-react";
+import { Trash2, Plus, Edit2, User, Calendar, Clock } from "lucide-react";
+import Swal from "sweetalert2";
 
 const BlogsManager = () => {
   const [blogs, setBlogs] = useState([]);
@@ -35,81 +36,116 @@ const BlogsManager = () => {
     setNewBlog({ ...newBlog, [e.target.name]: e.target.value });
   };
 
-  const handleAddBlog = async (e) => {
-    e.preventDefault();
-    if (!newBlog.title || !newBlog.author || !newBlog.content) return;
+ const handleAddBlog = async (e) => {
+  e.preventDefault();
+  if (!newBlog.title || !newBlog.author || !newBlog.content) return;
 
-    try {
-      let res;
-      // Check if image is a File
-      if (newBlog.image instanceof File) {
-        const formData = new FormData();
-        formData.append("image", newBlog.image);
-        formData.append("title", newBlog.title);
-        formData.append("highlight", newBlog.highlight);
-        formData.append("author", newBlog.author);
-        formData.append("category", newBlog.category);
-        formData.append("readTime", newBlog.readTime);
-        formData.append("content", newBlog.content);
+  // Confirm before create/update
+  const result = await Swal.fire({
+    title: editingBlog ? "Update this blog?" : "Create new blog?",
+    text: editingBlog
+      ? "Are you sure you want to update this blog?"
+      : "Do you want to create this new blog?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#000",
+    cancelButtonColor: "#d33",
+    confirmButtonText: editingBlog ? "Yes, update it!" : "Yes, create it!",
+  });
 
-        if (editingBlog) {
-          res = await axios.put(`/api/blogs/${editingBlog._id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        } else {
-          res = await axios.post("/api/blogs", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
-      } else {
-        // Image is a URL string
-        const payload = {
-          title: newBlog.title,
-          highlight: newBlog.highlight,
-          author: newBlog.author,
-          category: newBlog.category,
-          readTime: newBlog.readTime,
-          content: newBlog.content,
-          image: newBlog.image || "",
-        };
+  if (!result.isConfirmed) return;
 
-        if (editingBlog) {
-          res = await axios.put(`/api/blogs/${editingBlog._id}`, payload);
-        } else {
-          res = await axios.post("/api/blogs", payload);
-        }
-      }
+  try {
+    let res;
+    if (newBlog.image instanceof File) {
+      const formData = new FormData();
+      formData.append("image", newBlog.image);
+      formData.append("title", newBlog.title);
+      formData.append("highlight", newBlog.highlight);
+      formData.append("author", newBlog.author);
+      formData.append("category", newBlog.category);
+      formData.append("readTime", newBlog.readTime);
+      formData.append("content", newBlog.content);
 
       if (editingBlog) {
-        setBlogs(blogs.map((b) => (b._id === editingBlog._id ? res.data : b)));
-        setEditingBlog(null);
+        res = await axios.put(`/api/blogs/${editingBlog._id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        setBlogs([res.data, ...blogs]);
+        res = await axios.post("/api/blogs", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
+    } else {
+      const payload = {
+        title: newBlog.title,
+        highlight: newBlog.highlight,
+        author: newBlog.author,
+        category: newBlog.category,
+        readTime: newBlog.readTime,
+        content: newBlog.content,
+        image: newBlog.image || "",
+      };
 
-      setShowModal(false);
-      setNewBlog({
-        title: "",
-        highlight: "",
-        author: "",
-        category: "General",
-        readTime: "",
-        content: "",
-        image: "",
-      });
-    } catch (err) {
-      console.error("Error saving blog:", err);
+      if (editingBlog) {
+        res = await axios.put(`/api/blogs/${editingBlog._id}`, payload);
+      } else {
+        res = await axios.post("/api/blogs", payload);
+      }
     }
-  };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/api/blogs/${id}`);
-      setBlogs(blogs.filter((blog) => blog._id !== id));
-    } catch (err) {
-      console.error("Error deleting blog:", err);
+    if (editingBlog) {
+      setBlogs(blogs.map((b) => (b._id === editingBlog._id ? res.data : b)));
+      setEditingBlog(null);
+    } else {
+      setBlogs([res.data, ...blogs]);
     }
-  };
+
+    Swal.fire(
+      "Success!",
+      editingBlog ? "Blog updated successfully." : "Blog created successfully.",
+      "success"
+    );
+
+    setShowModal(false);
+    setNewBlog({
+      title: "",
+      highlight: "",
+      author: "",
+      category: "General",
+      readTime: "",
+      content: "",
+      image: "",
+    });
+  } catch (err) {
+    console.error("Error saving blog:", err);
+    Swal.fire("Error!", "Something went wrong while saving blog.", "error");
+  }
+};
+
+const handleDelete = async (id) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "This action cannot be undone!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    await axios.delete(`/api/blogs/${id}`);
+    setBlogs(blogs.filter((blog) => blog._id !== id));
+    Swal.fire("Deleted!", "Blog has been deleted.", "success");
+  } catch (err) {
+    console.error("Error deleting blog:", err);
+    Swal.fire("Error!", "Failed to delete blog.", "error");
+  }
+};
+
 
   const handleEdit = (blog) => {
     setEditingBlog(blog);
@@ -129,6 +165,7 @@ const BlogsManager = () => {
         </button>
       </div>
 
+
       {/* Blog Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((blog) => (
@@ -136,35 +173,51 @@ const BlogsManager = () => {
             key={blog._id}
             className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
           >
+            {/* Blog Image */}
             <img
               src={typeof blog.image === "string" ? blog.image : ""}
               alt={blog.title}
               className="h-40 w-full object-cover"
             />
+
+            {/* Blog Content */}
             <div className="p-4 flex-1 flex flex-col">
-              <h3 className="text-lg font-bold">{blog.title}</h3>
-              <p className="text-sm text-gray-600 mb-2">{blog.highlight}</p>
-              <p className="text-xs text-gray-500 mb-3">
-                By {blog.author} | {blog.category} | {blog.readTime} |{" "}
-                {blog.date?.split("T")[0]}
-              </p>
+              <h3 className="text-lg font-bold mb-1">{blog.title}</h3>
+              <p className="text-sm text-gray-600 mb-3">{blog.highlight}</p>
+
+              {/* Author + Date + Read Time */}
+              <div className="flex items-center text-xs text-gray-500 gap-4 mb-3">
+                <span className="flex items-center gap-1">
+                  <User size={14} /> {blog.author}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar size={14} /> {blog.date?.split("T")[0]}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock size={14} /> {blog.readTime}
+                </span>
+              </div>
+
+              {/* Short Content Preview */}
               <p className="text-sm text-gray-700 flex-1">
                 {blog.content.length > 120
                   ? blog.content.substring(0, 120) + "..."
                   : blog.content}
               </p>
+
+              {/* Action Buttons */}
               <div className="mt-4 flex justify-between">
                 <button
                   onClick={() => handleEdit(blog)}
-                  className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-full text-sm hover:bg-blue-700"
+                  className="p-2 hover:bg-blue-100 rounded"
                 >
-                  <Pencil size={16} /> Edit
+                  <Edit2 size={18} className="text-blue-600" />
                 </button>
                 <button
                   onClick={() => handleDelete(blog._id)}
-                  className="flex items-center gap-1 bg-red-600 text-white px-3 py-1.5 rounded-full text-sm hover:bg-red-700"
+                  className="p-2 hover:bg-red-100 rounded"
                 >
-                  <Trash2 size={16} /> Delete
+                  <Trash2 size={18} className="text-red-600" />
                 </button>
               </div>
             </div>
@@ -201,7 +254,7 @@ const BlogsManager = () => {
                   <input
                     type="text"
                     name="title"
-                    placeholder="Enter blog title"
+                    placeholder="Enter Blog Name"
                     value={newBlog.title}
                     onChange={handleChange}
                     className="border rounded px-3 py-2 w-full"
@@ -269,7 +322,7 @@ const BlogsManager = () => {
                     onChange={(e) =>
                       setNewBlog({ ...newBlog, image: e.target.files[0] })
                     }
-                        className="border rounded px-3 py-2 w-full"
+                    className="border rounded px-3 py-2 w-full"
                   />
                   {/* <input
                     type="text"

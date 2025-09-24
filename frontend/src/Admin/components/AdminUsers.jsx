@@ -99,19 +99,19 @@ export default function AdminUsers() {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700">
                   Sr.
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Name
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Email
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   School/College
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-700 uppercase tracking-wider">
+                <th className="text-center px-4 py-3 font-medium text-gray-700 ">
                   Action
                 </th>
               </tr>
@@ -135,18 +135,18 @@ export default function AdminUsers() {
                       onClick={() => setSelectedUser(u)}
                       className="p-3 hover:bg-blue-100/80 rounded"
                     >
-                      <Eye className="w-5 h-5 text-blue-600" />
+                      <Eye className="w-5 h-5 text-green-600" />
                     </button>
                     <button
                       onClick={() => handleEdit(u)}
                       className="p-3 hover:bg-green-100/80 rounded"
                     >
-                      <Edit2 className="w-5 h-5 text-green-600" />
+                      <Edit2 className="w-5 h-5 text-blue-600" />
                     </button>
                     <button
                       onClick={() => handleDelete(u._id)}
                       className="p-3 hover:bg-red-100/80 rounded"
-                    >
+                     >
                       <Trash2 className="w-5 h-5 text-red-600" />
                     </button>
                   </td>

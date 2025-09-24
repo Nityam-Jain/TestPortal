@@ -3,6 +3,8 @@ const { login, UserSignup, signupVendor, getUserProfile, updateUserProfile, getV
 const upload = require("../middleware/upload");
 const authMiddleware = require("../middleware/authMiddleware");
 const { getVendorStudents, addStudent, editStudent, deleteStudent } = require("../controller/VendorController");
+// const { bulkUploadStudents } = require("../controller/studentController");
+
 const router = express.Router();
 
 router.post("/signupVendor", signupVendor);
@@ -18,5 +20,7 @@ router.post("/students",  upload.single("profileImage"),authMiddleware, addStude
 router.get("/:vendorId/students", authMiddleware, getVendorStudents);
   router.put("/editStudent/:id", authMiddleware, upload.single("profileImage"), editStudent);
  router.delete("/deleteStudent/:id", authMiddleware, deleteStudent);
+//  router.post("/students/bulk", bulkUploadStudents);
+
 module.exports = router;
 

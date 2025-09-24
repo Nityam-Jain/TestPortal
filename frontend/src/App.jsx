@@ -16,6 +16,8 @@ import ContactPage from "./main/pages/ContactUs/ContactPage";
 import PublicTests from "./main/pages/Testpage/Publictest";
 import Spotlight from "./main/components/Spotligt";
 import Blogs from "./main/pages/Blogs";
+import BlogDetail from "./main/pages/BlogDetail";
+
 import Services from "./main/pages/services";
 import TakeTest from "./student/components/TakeTest";
 import ResultOverview from "./student/components/ResultOverview";
@@ -42,7 +44,8 @@ function App() {
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/Blogs" element={<Blogs />} />
-        <Route path="/Services" element={<Services />} />
+        <Route path="/blog-details/:id" element={<BlogDetail />} />
+       <Route path="/Services" element={<Services />} />
       </Routes>
     </>
   );

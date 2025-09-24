@@ -81,9 +81,9 @@ export default function AdminBanner() {
             />
             <button
               onClick={() => handleDelete(banner._id)}
-              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-md hover:bg-red-600"
+              className="absolute top-2 right-2 bg-red-300 text-white p-1 p-2 hover:bg-red-100/80 rounded"
             >
-              <Trash2 size={16} />
+              <Trash2 size={16} className="w-5 h-5 text-red-600" />
             </button>
           </div>
         ))}

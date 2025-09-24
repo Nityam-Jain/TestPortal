@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-[#1B3C53] text-[#F9F3EF] py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Logo and Description */}
+          {/* Logo and Description */} 
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 bg-gradient-to-r from-[#456882] to-[#1B3C53] rounded-lg flex items-center justify-center shadow-md">
@@ -58,9 +58,9 @@ export default function Footer() {
             <h3 className="font-semibold text-lg mb-4">Support</h3>
             <ul className="space-y-2 text-[#D2C1B6]">
               <li>
-                <Link to="/help" className="hover:text-[#F9F3EF] transition-colors">
+                {/* <Link to="/help" className="hover:text-[#F9F3EF] transition-colors">
                   Help Center
-                </Link>
+                </Link> */}
               </li>
               <li>
                 <Link to="/docs" className="hover:text-[#F9F3EF] transition-colors">

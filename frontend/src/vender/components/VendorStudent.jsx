@@ -323,22 +323,22 @@ export default function VendorStudentManager({ vendorId }) {
               <table className="min-w-full table-auto">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider">
+                    <th className="px-5 py-4 text-left font-medium text-gray-700 ">
                       Profile
                     </th>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider">
+                    <th className="px-5 py-4 text-left font-medium text-gray-700 ">
                       Name
                     </th>
                     <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
                       Email
                     </th>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                    <th className="px-5 py-4 text-left font-medium text-gray-700  hidden xl:table-cell">
                       Phone
                     </th>
-                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                    <th className="px-5 py-4 text-center font-medium text-gray-700  hidden xl:table-cell">
                       Academic Stage
                     </th>
-                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider">
+                    <th className="px-5 py-4 text-center font-medium text-gray-700 ">
                       Actions
                     </th>
                   </tr>

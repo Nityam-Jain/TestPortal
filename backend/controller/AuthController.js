@@ -86,6 +86,63 @@ const UserSignup = async (req, res) => {
   }
 };
 
+// Bulk Upload Users (CSV or JSON array)
+// @route POST /api/auth/students/bulk
+const bulkUploadUsers = async (req, res) => {
+  try {
+    const users = req.body; // Expecting an array of user objects
+
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ message: "No users provided" });
+    }
+
+    // Hash passwords before saving
+    const usersToInsert = await Promise.all(
+      users.map(async (u) => {
+        const existingUser = await User.findOne({ email: u.email });
+        if (existingUser) {
+          return null; // skip duplicates
+        }
+
+        const hashedPassword = await bcrypt.hash(u.password || "123456", 10);
+
+        return {
+          username: u.username,
+          email: u.email,
+          phone: u.phone,
+          gender: u.gender,
+          dob: u.dob ? new Date(new Date(u.dob).toDateString()) : null,
+          grade: u.grade,
+          institutionType: u.institutionType,
+          institutionName: u.institutionName,
+          stream: u.stream,
+          profileImage: u.profileImage || null,
+          vendorId: u.vendorId || null,
+          password: hashedPassword,
+          role: "user",
+        };
+      })
+    );
+
+    // Filter out skipped (null) users
+    const filteredUsers = usersToInsert.filter((u) => u !== null);
+
+    if (filteredUsers.length === 0) {
+      return res.status(400).json({ message: "All users already exist" });
+    }
+
+    // Insert in bulk
+    await User.insertMany(filteredUsers);
+
+    res
+      .status(201)
+      .json({ message: "Users uploaded successfully", count: filteredUsers.length });
+  } catch (err) {
+    console.error("Bulk Upload Error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 // POST /api/auth/login
 const login = async (req, res) => {
   const { emailOrUsername, password } = req.body;
@@ -112,7 +169,7 @@ const login = async (req, res) => {
       });
     }
 
-    // Try logging in as a user (using username)
+ // Try logging in as a user (using username)
    const user = await User.findOne({ email: emailOrUsername });
 if (!user) {
   return res.status(404).json({ message: "User not found" });
@@ -253,5 +310,6 @@ module.exports = {
   updateUserProfile,
   getVendorProfile,
   updateVendorProfile,
+  bulkUploadUsers,
 
 };

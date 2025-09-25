@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const Vendor = require('../models/Vendor');
-const dotenv = require("dotenv");
+const dotenv = require("dotenv"); 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -84,13 +84,16 @@ const UserSignup = async (req, res) => {
     console.error("Signup Error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
-};
+}; 
 
 // Bulk Upload Users (CSV or JSON array)
 // @route POST /api/auth/students/bulk
-const bulkUploadUsers = async (req, res) => {
+const bulkUploadUsers = async (req, res) => {  
   try {
-    const users = req.body; // Expecting an array of user objects
+
+    // console.log("Request body:", req.body); // 👈 check what is received
+
+    const {users} = req.body; // Expecting an array of user objects
 
     if (!Array.isArray(users) || users.length === 0) {
       return res.status(400).json({ message: "No users provided" });
@@ -140,6 +143,33 @@ const bulkUploadUsers = async (req, res) => {
   } catch (err) {
     console.error("Bulk Upload Error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// @desc   Search users
+// @route  GET /api/users/search?query=abc
+// @access Public (or protect with middleware if needed)
+const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ message: "Please provide a search query" });
+    }
+
+    // Case-insensitive partial match on username, email, or institutionName
+    const users = await User.find({
+      $or: [
+        { username: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+        { institutionName: { $regex: query, $options: "i" } },
+      ],
+    }).select("-password"); // Exclude password field
+
+    res.json(users);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -311,5 +341,5 @@ module.exports = {
   getVendorProfile,
   updateVendorProfile,
   bulkUploadUsers,
-
+  searchUsers
 };

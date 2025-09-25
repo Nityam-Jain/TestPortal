@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Edit2, Trash2, Eye } from "lucide-react";
+import { Edit2, Trash2, Eye, Search } from "lucide-react";
 import Papa from "papaparse";
 
 import {
@@ -21,6 +21,7 @@ export default function VendorStudentManager({ vendorId }) {
   const [editingStudent, setEditingStudent] = useState(null);
   const [viewStudent, setViewStudent] = useState(null);
   const [availableStreams, setAvailableStreams] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // ✅ added
 
   const [formData, setFormData] = useState({
     username: "",
@@ -33,7 +34,7 @@ export default function VendorStudentManager({ vendorId }) {
     institutionType: "School",
     institutionName: "",
     stream: "",
-    profileImage: null,
+    profileImage: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,6 +70,29 @@ export default function VendorStudentManager({ vendorId }) {
     fetchStudents();
   }, []);
 
+  // ✅ Search students
+  const searchStudents = async (query) => {
+    if (!query.trim()) {
+      fetchStudents(); // if empty, reload all students
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/auth/users/search?query=${query}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setStudents(res.data || []);
+    } catch (err) {
+      Swal.fire("Error", err.response?.data?.message || err.message, "error");
+    }
+  };
+
+  // ✅ Search handler
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    searchStudents(value);
+  };
   // Update streams on grade change
   const handleGradeChange = (gradeValue) => {
     const institutionType = gradeValue === "College" ? "College" : "School";
@@ -97,7 +121,10 @@ export default function VendorStudentManager({ vendorId }) {
       handleGradeChange(value);
       return;
     }
-
+    if (name === "profileImage" && files && files[0]) {
+      setFormData((prev) => ({ ...prev, profileImage: files[0] }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -114,7 +141,7 @@ export default function VendorStudentManager({ vendorId }) {
       institutionType: "School",
       institutionName: "",
       stream: "",
-      profileImage: null,
+      profileImage: "",
     });
     setAvailableStreams([]);
     setEditingStudent(null);
@@ -229,7 +256,7 @@ export default function VendorStudentManager({ vendorId }) {
         s.institutionType || (s.grade === "College" ? "College" : "School"),
       institutionName: s.institutionName || "",
       stream: s.stream || "",
-      profileImage: null,
+      profileImage: s.profileImage || "",
     });
 
     setShowForm(true);
@@ -255,12 +282,16 @@ export default function VendorStudentManager({ vendorId }) {
           institutionType: row.grade === "College" ? "College" : "School",
           institutionName: row.institutionName || "",
           stream: row.stream || "",
+          profileImage: row.profileImage || null,   // ✅ added
+          vendorId: row.vendorId || null,
         }));
 
         try {
-          await axios.post("/api/auth/students/bulk", csvStudents, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await axios.post("/api/auth/students/bulk",
+            { users: csvStudents },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            });
           Swal.fire("Success", "CSV uploaded successfully", "success");
           fetchStudents();
         } catch (err) {
@@ -285,8 +316,21 @@ export default function VendorStudentManager({ vendorId }) {
       {/* Top bar */}
       <div className="flex justify-between items-center mb-4 gap-4">
         <h2 className="text-2xl font-semibold">Student Manager</h2>
-        <div className="flex gap-2">
-          <label className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600">
+        <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+          {/* ✅ Search Bar */}
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search by name, email, or institution..."
+              className="border px-3 py-2 rounded w-full sm:w-72 pl-9"
+            />
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+          </div> <label className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600">
             Upload CSV
             <input
               type="file"
@@ -315,81 +359,81 @@ export default function VendorStudentManager({ vendorId }) {
       ) : (
         <>
           {/* <div className="p-4 md:p-6 bg-gray-50 min-h-screen"> */}
-            {/* <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
+          {/* <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
               All Students
             </h1> */}
 
-            <div className="overflow-x-auto rounded-lg shadow-lg bg-white">
-              <table className="min-w-full table-auto">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700 ">
-                      Profile
-                    </th>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700 ">
-                      Name
-                    </th>
-                    <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
-                      Email
-                    </th>
-                    <th className="px-5 py-4 text-left font-medium text-gray-700  hidden xl:table-cell">
-                      Phone
-                    </th>
-                    <th className="px-5 py-4 text-center font-medium text-gray-700  hidden xl:table-cell">
-                      Academic Stage
-                    </th>
-                    <th className="px-5 py-4 text-center font-medium text-gray-700 ">
-                      Actions
-                    </th>
+          <div className="overflow-x-auto rounded-lg shadow-lg bg-white">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-5 py-4 text-left font-medium text-gray-700 ">
+                    Profile
+                  </th>
+                  <th className="px-5 py-4 text-left font-medium text-gray-700 ">
+                    Name
+                  </th>
+                  <th className="px-5 py-4 text-center font-medium text-gray-700 uppercase tracking-wider hidden xl:table-cell">
+                    Email
+                  </th>
+                  <th className="px-5 py-4 text-left font-medium text-gray-700  hidden xl:table-cell">
+                    Phone
+                  </th>
+                  <th className="px-5 py-4 text-center font-medium text-gray-700  hidden xl:table-cell">
+                    Academic Stage
+                  </th>
+                  <th className="px-5 py-4 text-center font-medium text-gray-700 ">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {currentStudents.map((s) => (
+                  <tr key={s._id} className="bg-white hover:bg-gray-50 transition">
+                    <td className="px-3 py-3">
+                      {s.profileImage ? (
+                        <img
+                          src={`/uploads/${s.profileImage}`}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-full object-cover mx-auto"
+                        />
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-3 font-medium">{s.username}</td>
+                    <td className="px-3 py-3 text-center hidden xl:table-cell">
+                      {s.email}
+                    </td>
+                    <td className="px-3 py-3 hidden xl:table-cell">{s.phone}</td>
+                    <td className="px-3 py-3 text-center hidden xl:table-cell">
+                      {s.grade}
+                    </td>
+                    <td className="px-3 py-3 flex justify-center gap-3">
+                      <button
+                        onClick={() => setViewStudent(s)}
+                        className="p-2 hover:bg-green-100/80 rounded"
+                      >
+                        <Eye size={20} className="text-green-600" />
+                      </button>
+                      <button
+                        onClick={() => openEditForm(s)}
+                        className="p-2 hover:bg-blue-100/80 rounded"
+                      >
+                        <Edit2 size={20} className="text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(s._id)}
+                        className="p-2 hover:bg-red-100/80 rounded"
+                      >
+                        <Trash2 size={20} className="text-red-600" />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {currentStudents.map((s) => (
-                    <tr key={s._id} className="bg-white hover:bg-gray-50 transition">
-                      <td className="px-3 py-3">
-                        {s.profileImage ? (
-                          <img
-                            src={`/uploads/${s.profileImage}`}
-                            alt="Profile"
-                            className="w-10 h-10 rounded-full object-cover mx-auto"
-                          />
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 font-medium">{s.username}</td>
-                      <td className="px-3 py-3 text-center hidden xl:table-cell">
-                        {s.email}
-                      </td>
-                      <td className="px-3 py-3 hidden xl:table-cell">{s.phone}</td>
-                      <td className="px-3 py-3 text-center hidden xl:table-cell">
-                        {s.grade}
-                      </td>
-                      <td className="px-3 py-3 flex justify-center gap-3">
-                        <button
-                          onClick={() => setViewStudent(s)}
-                          className="p-2 hover:bg-green-100/80 rounded"
-                        >
-                          <Eye size={20} className="text-green-600" />
-                        </button>
-                        <button
-                          onClick={() => openEditForm(s)}
-                          className="p-2 hover:bg-blue-100/80 rounded"
-                        >
-                          <Edit2 size={20} className="text-blue-600" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(s._id)}
-                          className="p-2 hover:bg-red-100/80 rounded"
-                        >
-                          <Trash2 size={20} className="text-red-600" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {/* </div> */}
 
 

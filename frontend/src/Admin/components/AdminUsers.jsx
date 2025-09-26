@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
-  User,
+  User, 
   Mail,
   Phone,
   Calendar,
@@ -19,6 +19,10 @@ export default function AdminUsers() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUser, setEditUser] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
 
   const token = sessionStorage.getItem("adminToken");
 
@@ -58,14 +62,18 @@ export default function AdminUsers() {
         Swal.fire("Deleted!", "User has been deleted.", "success");
         setUsers((prev) => prev.filter((u) => u._id !== id));
       } catch (err) {
-        Swal.fire("Error", err.response?.data?.message || "Failed to delete user", "error");
+        Swal.fire(
+          "Error",
+          err.response?.data?.message || "Failed to delete user",
+          "error"
+        );
       }
     }
   };
 
   // Open edit modal
   const handleEdit = (user) => {
-    setEditUser({ ...user, password: "" }); // password optional
+    setEditUser({ ...user, password: "" });
   };
 
   // Submit edit form
@@ -74,7 +82,7 @@ export default function AdminUsers() {
     try {
       const id = editUser._id;
       const payload = { ...editUser };
-      if (!payload.password) delete payload.password; // don't update password if empty
+      if (!payload.password) delete payload.password;
 
       const res = await axios.put(`/api/admin/users/${id}`, payload, {
         headers: { Authorization: `Bearer ${token}` },
@@ -84,9 +92,18 @@ export default function AdminUsers() {
       setUsers((prev) => prev.map((u) => (u._id === id ? res.data : u)));
       setEditUser(null);
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Failed to update user", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "Failed to update user",
+        "error"
+      );
     }
   };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const currentUsers = users.slice(startIndex, startIndex + usersPerPage);
 
   return (
     <div className="p-6">
@@ -99,30 +116,24 @@ export default function AdminUsers() {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
+                <th className="text-left px-4 py-3 font-medium text-gray-700">Sr.</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-700">Name</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-700">Email</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700">
-                  Sr.
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                  Name
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                  Email
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   School/College
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-gray-700 ">
-                  Action
-                </th>
+                <th className="text-center px-4 py-3 font-medium text-gray-700">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {users.map((u, i) => (
+              {currentUsers.map((u, i) => (
                 <tr
                   key={u._id}
                   className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
                 >
-                  <td className="px-3 py-2 text-sm md:text-base">{i + 1}</td>
+                  <td className="px-3 py-2 text-sm md:text-base">
+                    {startIndex + i + 1}
+                  </td>
                   <td className="px-3 py-2 text-sm md:text-base">{u.username}</td>
                   <td className="px-3 py-2 text-sm md:text-base">{u.email}</td>
                   <td className="px-3 py-2 text-sm md:text-base">
@@ -146,7 +157,7 @@ export default function AdminUsers() {
                     <button
                       onClick={() => handleDelete(u._id)}
                       className="p-3 hover:bg-red-100/80 rounded"
-                     >
+                    >
                       <Trash2 className="w-5 h-5 text-red-600" />
                     </button>
                   </td>
@@ -154,6 +165,41 @@ export default function AdminUsers() {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-end items-center gap-2 p-4">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              >
+                Prev
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === i + 1
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
       {/* View Modal */ }

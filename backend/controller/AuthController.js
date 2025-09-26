@@ -170,7 +170,7 @@ const searchUsers = async (req, res) => {
   } catch (error) {
     console.error("Search error:", error);
     res.status(500).json({ message: "Server error" });
-  }
+  }1 
 };
 
 // POST /api/auth/login

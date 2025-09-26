@@ -109,13 +109,13 @@ export default function AdminVendors() {
                   Sr.
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                  Username
+                  Institute owner
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Email
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                  Business Name
+                 Institute Name
                 </th>
                 <th className="text-center px-4 py-3 font-medium text-gray-700 ">
                   Action
@@ -184,7 +184,7 @@ export default function AdminVendors() {
                 <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl shadow-sm">
                   <User className="text-blue-500 w-5 h-5" />
                   <div>
-                    <p className="text-sm text-gray-500">Username</p>
+                    <p className="text-sm text-gray-500">Institute owner</p>
                     <p className="font-medium">{selectedVendor.username}</p>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function AdminVendors() {
                 <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl shadow-sm">
                   <Briefcase className="text-indigo-500 w-5 h-5" />
                   <div>
-                    <p className="text-sm text-gray-500">Business Name</p>
+                    <p className="text-sm text-gray-500">Institute Name</p>
                     <p className="font-medium">{selectedVendor.businessName}</p>
                   </div>
                 </div>

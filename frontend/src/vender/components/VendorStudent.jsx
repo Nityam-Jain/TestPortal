@@ -439,21 +439,72 @@ export default function VendorStudentManager({ vendorId }) {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-4">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === i + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+            <div className="flex justify-end mt-6 pr-6 sticky bottom-0 bg-white py-3">
+              {/* Prev Button */}
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded mr-2 ${currentPage === 1
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+              >
+                Prev
+              </button>
+
+              {/* Page Numbers with Ellipsis */}
+              {(() => {
+                const pages = [];
+                for (let page = 1; page <= totalPages; page++) {
+                  if (
+                    page === 1 || // always show first
+                    page === totalPages || // always show last
+                    Math.abs(page - currentPage) <= 1 // current & neighbors
+                  ) {
+                    pages.push(
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1 rounded mx-1 ${currentPage === page
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (
+                    // insert ellipsis only once for a skipped range
+                    (page === 2 && currentPage > 3) ||
+                    (page === totalPages - 1 && currentPage < totalPages - 2)
+                  ) {
+                    pages.push(
+                      <span key={`ellipsis-${page}`} className="px-2">
+                        ...
+                      </span>
+                    );
+                  }
+                }
+                return pages;
+              })()}
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded ml-2 ${currentPage === totalPages
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+              >
+                Next
+              </button>
             </div>
           )}
+
+
         </>
       )}
 

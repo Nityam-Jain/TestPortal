@@ -69,12 +69,20 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
             {/* Logo */}
             <div className="flex items-center justify-between mb-10 px-3">
               <div className="flex items-center gap-2">
+                {/* Logo icon */}
                 <div className="w-8 h-8 bg-gradient-to-r from-[#1B3C53] to-[#456882] rounded-lg flex items-center justify-center shadow-md">
                   <BookOpen className="w-5 h-5 text-[#F9F3EF]" />
-                </div>                {!collapsed && (
-                  <h2 className="text-2xl font-bold text-[#1B3C53]">Admin</h2>
+                </div>
+
+                {/* Title + Admin Panel stacked */}
+                {!collapsed && (
+                  <div className="flex flex-col leading-tight">
+                    <h2 className="text-2xl font-bold text-[#1B3C53]">TestPortal</h2>
+                    <p className="text-xl font-semibold text-gray-600 ">Admin Panel</p>
+                  </div>
                 )}
               </div>
+
               {/* Close in mobile */}
               <button
                 className="md:hidden text-gray-700"
@@ -83,35 +91,42 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                 <X size={24} />
               </button>
             </div>
-
             {/* Nav Items */}
             <nav className="flex flex-col gap-2">
-              {navItems.map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setActiveView(item.view);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left
-                    ${activeView === item.view
-                      ? "bg-[#2E5A72] text-white"
-                      : "hover:bg-gray-100 text-gray-700"
-                    }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  {!collapsed && (
-                    <span className="text-sm font-medium">{item.label}</span>
-                  )}
-                </button>
-              ))}
+              {navItems
+                .filter(
+                  (item) =>
+                    item.label !== "Transactions" && // exclude Transactions here
+                    item.label !== "Services" &&
+                    item.label !== "Blogs" &&
+                    item.label !== "Query"
+                )
+                .map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setActiveView(item.view);
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left
+          ${activeView === item.view
+                        ? "bg-[#2E5A72] text-white"
+                        : "hover:bg-gray-100 text-gray-700"
+                      }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {!collapsed && (
+                      <span className="text-sm font-medium">{item.label}</span>
+                    )}
+                  </button>
+                ))}
 
-              {/* Subscription Dropdown */}
+              {/* Subscription Dropdown (moved above Transactions) */}
               <div>
                 <button
                   onClick={() => setSubscriptionOpen(!subscriptionOpen)}
                   className={`flex items-center gap-3 px-3 py-2 w-full rounded-lg transition-all text-left
-                    ${activeView.startsWith("Subscription")
+        ${activeView.startsWith("Subscription")
                       ? "bg-[#2E5A72] text-white"
                       : "hover:bg-gray-100 text-gray-700"
                     }`}
@@ -138,7 +153,7 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                         setIsOpen(false);
                       }}
                       className={`px-3 py-1.5 rounded-md text-sm text-left
-                        ${activeView === "AddSubscriptionPlan"
+            ${activeView === "AddSubscriptionPlan"
                           ? "bg-[#2E5A72] text-white"
                           : "hover:bg-gray-100 text-gray-700"
                         }`}
@@ -151,7 +166,7 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                         setIsOpen(false);
                       }}
                       className={`px-3 py-1.5 rounded-md text-sm text-left
-                        ${activeView === "AllSubscriptionPlans"
+            ${activeView === "AllSubscriptionPlans"
                           ? "bg-[#2E5A72] text-white"
                           : "hover:bg-gray-100 text-gray-700"
                         }`}
@@ -161,7 +176,37 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
                   </div>
                 )}
               </div>
+
+              {/* Now add the rest */}
+              {navItems
+                .filter(
+                  (item) =>
+                    item.label === "Transactions" ||
+                    item.label === "Services" ||
+                    item.label === "Blogs" ||
+                    item.label === "Query"
+                )
+                .map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setActiveView(item.view);
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left
+          ${activeView === item.view
+                        ? "bg-[#2E5A72] text-white"
+                        : "hover:bg-gray-100 text-gray-700"
+                      }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {!collapsed && (
+                      <span className="text-sm font-medium">{item.label}</span>
+                    )}
+                  </button>
+                ))}
             </nav>
+
 
             {/* Collapse Btn (desktop only) */}
             <button

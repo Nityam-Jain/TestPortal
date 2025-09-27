@@ -49,8 +49,26 @@ const vendorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    // **New field for unique institute ID**
+    instituteId: {
+      type: String,
+      unique: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
+
+// **Pre-save hook to generate instituteId**
+vendorSchema.pre("save", async function (next) {
+  if (!this.instituteId) {
+    const Vendor = mongoose.model("Vendor");
+    const count = await Vendor.countDocuments();
+    const numberPart = String(count + 1).padStart(3, "0"); // 1 -> 001
+    this.instituteId = `TPBIN-${numberPart}`; 
+  }
+  next();
+});
 
 module.exports = mongoose.model("Vendor", vendorSchema);

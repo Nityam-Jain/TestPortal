@@ -45,9 +45,9 @@ function VendorDashboard() {
       >
         {activeView === "Dashboard" && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h1 className="text-2xl font-bold text-[#1B3C53] mb-4">Welcome Vendor!</h1>
+            <h1 className="text-2xl font-bold text-[#1B3C53] mb-4">Welcome to Institute Panel</h1>
             <p className="text-[#456882]">
-              This is your vendor dashboard. From here you can manage your tests, view results, and control your settings.
+              This is your Institute dashboard. From here you can manage your tests, view results, and control your settings.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">

@@ -106,7 +106,7 @@ export default function AdminVendors() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                  Sr.
+                  Institute ID
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
                   Institute owner
@@ -115,7 +115,7 @@ export default function AdminVendors() {
                   Email
                 </th>
                 <th className="text-left px-4 py-3 font-medium text-gray-700 ">
-                 Institute Name
+                  Institute Name
                 </th>
                 <th className="text-center px-4 py-3 font-medium text-gray-700 ">
                   Action
@@ -128,10 +128,10 @@ export default function AdminVendors() {
                   key={vendor._id}
                   className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                 >
-                  <td className="px-3 py-2 text-sm md:text-base">{idx + 1}.</td>
+                  <td className="px-3 py-2 text-sm md:text-base">{vendor.instituteId}</td>
                   <td className="px-3 py-2 text-sm md:text-base">
                     {vendor.username}
-                  </td>
+                  </td> 
                   <td className="px-3 py-2 text-sm md:text-base">{vendor.email}</td>
                   <td className="px-3 py-2 text-sm md:text-base">
                     {vendor.businessName}
@@ -334,7 +334,7 @@ export default function AdminVendors() {
 
                 // Validation
                 if (editVendor.idProofName === "Aadhar Card") {
-                  val = val.replace(/\D/g, ""); 
+                  val = val.replace(/\D/g, "");
                   if (val.length > 12) val = val.slice(0, 12);
                 } else if (editVendor.idProofName === "PAN Card") {
                   val = val.toUpperCase();

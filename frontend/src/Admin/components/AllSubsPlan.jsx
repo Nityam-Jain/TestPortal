@@ -8,21 +8,19 @@ const AllSubscriptions = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentPlan, setCurrentPlan] = useState(null);
 
-  // Fetch subscription plans
   useEffect(() => {
     fetchPlans();
   }, []);
 
   const fetchPlans = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/subscriptions"); // adjust API URL
+      const res = await axios.get("http://localhost:5000/api/subscriptions");
       setPlans(res.data);
     } catch (err) {
       console.error("Error fetching plans:", err);
     }
   };
 
-  // Delete plan
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -44,7 +42,6 @@ const AllSubscriptions = () => {
     }
   };
 
-  // Edit plan → open modal with prefilled data
   const handleEdit = (plan) => {
     setCurrentPlan({
       ...plan,
@@ -53,7 +50,6 @@ const AllSubscriptions = () => {
     setShowModal(true);
   };
 
-  // Update plan API
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -78,77 +74,57 @@ const AllSubscriptions = () => {
     }
   };
 
-  // Capitalize name
-  const formatName = (name) => {
-    if (!name) return "";
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };
-
-  // Format description → 4–5 words per line
-  const formatDescription = (text) => {
-    if (!text) return "";
-    const words = text.split(" ");
-    const lines = [];
-    for (let i = 0; i < words.length; i += 5) {
-      lines.push(words.slice(i, i + 5).join(" "));
-    }
-    return lines;
-  };
-
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">All Subscription Plans</h2>
+      <h2 className="text-xl font-semibold mb-6">All Subscription Plans</h2>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-separate border-spacing-y-3">
-          <thead>
-            <tr className="bg-gray-300 text-left">
-              <th className="p-3">Name</th>
-              <th className="p-3">Price (₹)</th>
-              <th className="p-3">Description</th>
-              <th className="p-3">Features</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {plans.map((plan, index) => (
-              <tr key={index} className="bg-white shadow-sm rounded-lg">
-                <td className="p-3">{formatName(plan.planName)}</td>
-                <td className="p-3">{plan.price}</td>
-                <td className="p-3">
-                  {formatDescription(plan.description).map((line, i) => (
-                    <div key={i}>{line}</div>
-                  ))}
-                </td>
-                <td className="p-3">
-                  <ul className="list-disc pl-5">
-                    {plan.features &&
-                      plan.features.map((feature, i) => (
-                        <li key={i}>{feature}</li>
-                      ))}
-                  </ul>
-                </td>
-                <td className="p-3 flex gap-2">
-                  {/* Edit button */}
-                  <button
-                    onClick={() => handleEdit(plan)}
-                    className="flex items-center gap-1 px-3 py-1.5 p-3 hover:bg-blue-100/80 rounded"
-                  >
-                    <Edit2  className="w-5 h-5 text-blue-600" size={16} /> 
-                  </button>
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {plans.map((plan, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-xl shadow-md p-6 border hover:shadow-lg transition"
+          >
+            {/* Plan Name */}
+            <h3 className="text-lg font-semibold text-gray-800">
+              {plan.planName}
+            </h3>
 
-                  {/* Delete button */}
-                  <button
-                    onClick={() => handleDelete(plan._id)}
-                    className="flex items-center gap-1 px-3 py-1.5 p-3 hover:bg-red-100/80 rounded"
-                  >
-                    <Trash2 className="w-5 h-5 text-red-600" size={16} /> 
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            {/* Price */}
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              ₹{plan.price}/month
+            </p>
+
+            {/* Description */}
+            <p className="text-gray-600 text-sm mt-2">{plan.description}</p>
+
+            {/* Features */}
+            <ul className="mt-4 space-y-1 text-gray-700 text-sm">
+              {plan.features &&
+                plan.features.map((feature, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span> {feature}
+                  </li>
+                ))}
+            </ul>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => handleEdit(plan)}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+              >
+                <Edit2 size={16} /> Edit
+              </button>
+              <button
+                onClick={() => handleDelete(plan._id)}
+                className="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded hover:bg-red-200"
+              >
+                <Trash2 size={16} /> Delete
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Edit Modal */}
@@ -197,7 +173,9 @@ const AllSubscriptions = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Features (comma separated)</label>
+                <label className="block text-sm font-medium mb-1">
+                  Features (comma separated)
+                </label>
                 <input
                   type="text"
                   value={currentPlan.features}

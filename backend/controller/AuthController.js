@@ -2,13 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const Vendor = require('../models/Vendor');
-const dotenv = require("dotenv"); 
+const dotenv = require("dotenv");
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateToken = (id, role) =>
   jwt.sign({ id, role }, JWT_SECRET, { expiresIn: '7d' });
- 
+
 
 const signupVendor = async (req, res) => {
   const { username, email, mobile, address, businessName, idProofName, idProofNumber, password } = req.body;
@@ -70,13 +70,13 @@ const UserSignup = async (req, res) => {
       gender,
       dob: new Date(new Date(dob).toDateString()),
       grade,
-       institutionType,   // ✅ fixed
+      institutionType,   // ✅ fixed
       institutionName,   // ✅ fixed
-      stream, 
+      stream,
       profileImage: profileImage || null,
       vendorId: vendorId || null,
-      password, 
-      role: "user", 
+      password,
+      role: "user",
     });
 
     res.status(201).json({ message: "User registered successfully", role: user.role });
@@ -84,16 +84,16 @@ const UserSignup = async (req, res) => {
     console.error("Signup Error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
-}; 
+};
 
 // Bulk Upload Users (CSV or JSON array)
 // @route POST /api/auth/students/bulk
-const bulkUploadUsers = async (req, res) => {  
+const bulkUploadUsers = async (req, res) => {
   try {
 
     // console.log("Request body:", req.body); // 👈 check what is received
 
-    const {users} = req.body; // Expecting an array of user objects
+    const { users } = req.body; // Expecting an array of user objects
 
     if (!Array.isArray(users) || users.length === 0) {
       return res.status(400).json({ message: "No users provided" });
@@ -170,7 +170,7 @@ const searchUsers = async (req, res) => {
   } catch (error) {
     console.error("Search error:", error);
     res.status(500).json({ message: "Server error" });
-  }1 
+  } 1
 };
 
 // POST /api/auth/login
@@ -194,49 +194,50 @@ const login = async (req, res) => {
           id: vendor._id,
           name: vendor.name,
           email: vendor.email,
+          instituteId: vendor.instituteId, // ✅ generated ID
           role: 'vendor'
         }
       });
     }
 
- // Try logging in as a user (using username)
-   const user = await User.findOne({ email: emailOrUsername });
-if (!user) {
-  return res.status(404).json({ message: "User not found" });
-}
+    // Try logging in as a user (using username)
+    const user = await User.findOne({ email: emailOrUsername });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-// ✅ Check password
-const isMatch = await bcrypt.compare(password, user.password);
-if (!isMatch) {
-  return res.status(401).json({ message: "Invalid password" });
-}
+    // ✅ Check password 
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
 
-// ✅ Build token payload (include vendorId if exists)
-const payload = {
-  id: user._id,
-  role: user.role || "user",
-  vendorId: user.vendorId || null, // 👈 important
-};
+    // ✅ Build token payload (include vendorId if exists)
+    const payload = {
+      id: user._id,
+      role: user.role || "user",
+      vendorId: user.vendorId || null, // 👈 important
+    };
 
-// ✅ Generate JWT
-const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    // ✅ Generate JWT
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-// ✅ Response (send vendorId to frontend as well)
-return res.status(200).json({
-  token,
-  user: {
-    id: user._id,
-    name: user.username,
-    email: user.email,
-    role: user.role,
-    vendorId: user.vendorId || null, // 👈 include here too
-  },
-});
+    // ✅ Response (send vendorId to frontend as well)
+    return res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.username,
+        email: user.email,
+        role: user.role,
+        vendorId: user.vendorId || null, // 👈 include here too
+      },
+    });
 
 
     return res.status(404).json({ message: 'Account not found' });
 
-  } catch (err) { 
+  } catch (err) {
     console.log(err)
     res.status(500).json({ message: 'Login error', error: err.message });
   }

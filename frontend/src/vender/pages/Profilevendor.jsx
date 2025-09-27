@@ -156,7 +156,9 @@ const ProfileVendor = () => {
 
               {/* ID Proof Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">ID Proof Name</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  ID Proof Name
+                </label>
                 <select
                   name="idProofName"
                   value={formData.idProofName}
@@ -173,15 +175,25 @@ const ProfileVendor = () => {
 
               {/* ID Proof Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">ID Proof Number</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  {formData.idProofName
+                    ? `${formData.idProofName} Number`
+                    : "ID Proof Number"}
+                </label>
                 <input
                   type="text"
                   name="idProofNumber"
                   value={formData.idProofNumber}
                   onChange={handleChange}
+                  placeholder={
+                    formData.idProofName
+                      ? `Enter ${formData.idProofName} Number`
+                      : "Enter ID Proof Number"
+                  }
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1B3C53]"
                 />
               </div>
+
 
               {/* Buttons */}
               <div className="md:col-span-2 flex gap-4 justify-end mt-4">
@@ -285,13 +297,17 @@ const ProfileVendor = () => {
                     <div className="flex items-center gap-4">
                       <CreditCard className="text-gray-600" size={28} />
                       <div>
-                        <p className="text-gray-500 text-sm">ID Number</p>
+                        <p className="text-gray-500 text-sm">
+                          {profile.idProofName
+                            ? `${profile.idProofName} Number`
+                            : "ID Number"}
+                        </p>
                         <p className="text-gray-800 font-semibold">{profile.idProofNumber}</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> 
             </div>
           )
         ) : (

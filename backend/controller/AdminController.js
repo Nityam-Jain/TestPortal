@@ -136,19 +136,23 @@ module.exports.updateVendor = async (req, res) => {
     res.status(500).json({ message: "Failed to update vendor" });
   }
 };
-
-// ✅ Delete vendor by ID
+// ✅ Delete vendor by ID (with cascading delete of students)
 module.exports.deleteVendor = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // 1️⃣ Delete all students linked to this vendor
+    await User.deleteMany({ vendorId: id });
+
+    // 2️⃣ Delete the vendor
     const deletedVendor = await Vendor.findByIdAndDelete(id);
 
     if (!deletedVendor) {
       return res.status(404).json({ message: "Vendor not found" });
     }
 
-    res.status(200).json({ message: "Vendor deleted successfully" });
+    res.status(200).json({ message: "Vendor and all related students deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete vendor" });
+    res.status(500).json({ message: "Failed to delete vendor", error: error.message });
   }
 };

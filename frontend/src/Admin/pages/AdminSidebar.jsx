@@ -32,7 +32,7 @@ function AdminSidebar({ activeView, setActiveView, onLogout, collapsed, setColla
     { label: "Dashboard", icon: House, view: "Dashboard" },
     { label: "All Institutes", icon: Landmark, view: "AdminVendors" },
     { label: "All Students", icon: UserSearch, view: "AdminUsers" },
-    { label: "Custom Banner", icon: Image, view: "CustomBanner" },
+    { label: "Banner Manager", icon: Image, view: "CustomBanner" },
     { label: "Transactions", icon: BadgeIndianRupee, view: "Transactions" },
     { label: "Services", icon: Briefcase, view: "Services" },
     { label: "Blogs", icon: BookMarked, view: "Blogs" },

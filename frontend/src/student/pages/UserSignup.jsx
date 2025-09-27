@@ -33,7 +33,7 @@ const UserSignup = () => {
       setAvailableStreams(["General"]);
       setFormData((prev) => ({ ...prev, stream: "General" }));
     } else if (formData.grade === "11th" || formData.grade === "12th") {
-      setAvailableStreams(["PCM","PCB", "Commerce", "Arts"]);
+      setAvailableStreams(["PCM", "PCB", "Commerce", "Arts"]);
       setFormData((prev) => ({ ...prev, stream: "" }));
     } else if (formData.grade === "College") {
       setAvailableStreams(["B.Tech", "B.Sc", "B.Com", "BA"]);
@@ -188,11 +188,20 @@ const UserSignup = () => {
               type="tel"
               name="phone"
               value={formData.phone}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, ""); // allow only numbers
+                if (value.length <= 10) {
+                  handleChange({
+                    target: { name: "phone", value },
+                  });
+                }
+              }}
               placeholder="Enter phone"
               className="w-full px-3 py-1.5 border rounded"
+              maxLength={10} // also restricts typing more than 10
             />
           </div>
+
 
           {/* Gender */}
           <div>

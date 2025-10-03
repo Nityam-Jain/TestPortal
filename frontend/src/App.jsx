@@ -17,6 +17,8 @@ import PublicTests from "./main/pages/Testpage/Publictest";
 import Spotlight from "./main/components/Spotligt";
 import Blogs from "./main/pages/Blogs";
 import BlogDetail from "./main/pages/BlogDetail";
+import SubscriptionPlans from "./vender/components/SubscriptionPlans";
+import VendorStudents from "./vender/components/VendorStudent";
 
 import Services from "./main/pages/services";
 import TakeTest from "./student/components/TakeTest";
@@ -45,7 +47,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/Blogs" element={<Blogs />} />
         <Route path="/blog-details/:id" element={<BlogDetail />} />
-       <Route path="/Services" element={<Services />} />
+        <Route path="/Services" element={<Services />} />
+        <Route path="/vendor/students" element={<VendorStudents />} />
+        <Route path="/vendor/subscription" element={<SubscriptionPlans />} />
       </Routes>
     </>
   );

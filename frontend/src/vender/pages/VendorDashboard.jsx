@@ -5,8 +5,9 @@ import VendorQuestionManager from '../components/VendorQuestionManager';
 import TestManager from '../components/TestManager';
 import ProfileVendor from './Profilevendor';
 import CourseHierarchyManager from '../components/CourseHierarchyManager';
- import VendorStudent from '../components/VendorStudent';
-
+import VendorStudent from '../components/VendorStudent';
+import VendorSetting from "../components/vendorSettings";
+import VendorResult from "../components/vendorResult";
 function VendorDashboard() {
 
     const vendorId = "6888c8542eada7b5ee86a227"; // from auth normally
@@ -49,7 +50,7 @@ function VendorDashboard() {
             <p className="text-[#456882]">
               This is your Institute dashboard. From here you can manage your tests, view results, and control your settings.
             </p>
-
+ 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
               <div className="bg-[#1B3C53] text-white p-6 rounded-xl shadow">
                 <h3 className="text-lg font-bold mb-2">Total Tests</h3>
@@ -70,10 +71,11 @@ function VendorDashboard() {
         {activeView === "Profile" && <ProfileVendor />}
         {activeView === "ManageQuestions" && <VendorQuestionManager />}
         {activeView === "ManageTest" && <TestManager />}
-         {activeView === "VendorStudent" && <VendorStudent/>}
+        {activeView === "VendorStudent" && <VendorStudent/>}
         {activeView === "ManageCourses" &&  <CourseHierarchyManager vendorId={vendorId} />}
-        {/* Add more views here */}
-      </main>
+        {activeView === "Settings" && <VendorSetting/>}  
+        {activeView === "Results" && <VendorResult/>}  
+    </main>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Edit2Icon, Trash2, ArrowLeft } from "lucide-react";
+import { Edit2Icon, Trash2, ArrowLeft, Layers } from "lucide-react";
 
 export default function CourseHierarchyManager() {
   const [courses, setCourses] = useState([]);
@@ -10,7 +10,7 @@ export default function CourseHierarchyManager() {
 
   const token = sessionStorage.getItem("venderToken");
 
-  // Fetch hierarchy 
+  // Fetch hierarchy
   const fetchHierarchy = async () => {
     try {
       const res = await axios.get("/api/courses/hierarchy", {
@@ -106,14 +106,22 @@ export default function CourseHierarchyManager() {
   // ---------- UI ----------
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Course Hierarchy Manager</h1>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-3 bg-blue-100 rounded-full">
+          <Layers className="text-blue-600" size={28} />
+        </div>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Course  Manager
+        </h1>
+      </div>
 
       {/* Step 1: Courses */}
       {!selectedCourse && !selectedSubject && (
         <>
           <button
             onClick={() => handleAdd("Course")}
-            className="mb-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow"
+            className="mb-6 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition"
           >
             + Add Course
           </button>
@@ -121,18 +129,18 @@ export default function CourseHierarchyManager() {
             {courses.map((course) => (
               <div
                 key={course._id}
-                className="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition cursor-pointer"
+                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition cursor-pointer p-5 flex flex-col justify-between"
               >
                 <h3
-                  className="font-semibold text-lg mb-2"
+                  className="font-semibold text-lg text-gray-800 hover:text-blue-600 mb-3"
                   onClick={() => setSelectedCourse(course)}
                 >
                   {course.name}
                 </h3>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <button
                     onClick={() => handleEdit("Course", course, "courses")}
-                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
                   >
                     <Edit2Icon size={16} />
                   </button>
@@ -140,8 +148,7 @@ export default function CourseHierarchyManager() {
                     onClick={() =>
                       handleDelete("Course", course._id, "courses")
                     }
-                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
-                    title="Delete"
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -157,16 +164,16 @@ export default function CourseHierarchyManager() {
         <div>
           <button
             onClick={() => setSelectedCourse(null)}
-            className="mb-4 flex items-center gap-1 bg-gray-200 px-4 py-2 rounded"
+            className="mb-4 flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
           >
             <ArrowLeft size={16} /> Back
           </button>
-          <h2 className="text-xl font-semibold mb-3">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
             Subjects in {selectedCourse.name}
           </h2>
           <button
             onClick={() => handleAdd("Subject", selectedCourse)}
-            className="mb-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow"
+            className="mb-6 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition"
           >
             + Add Subject
           </button>
@@ -174,26 +181,27 @@ export default function CourseHierarchyManager() {
             {selectedCourse.subjects.map((subj) => (
               <div
                 key={subj._id}
-                className="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition cursor-pointer"
+                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition cursor-pointer p-5 flex flex-col justify-between"
               >
                 <h4
-                  className="font-semibold text-lg mb-2"
+                  className="font-semibold text-lg text-gray-800 hover:text-blue-600 mb-3"
                   onClick={() => setSelectedSubject(subj)}
                 >
                   {subj.name}
                 </h4>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
                   <button
                     onClick={() => handleEdit("Subject", subj, "subjects")}
-                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"              >
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                  >
                     <Edit2Icon size={16} />
                   </button>
                   <button
                     onClick={() =>
                       handleDelete("Subject", subj._id, "subjects")
                     }
-                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
-                    title="Delete"                 >
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -208,16 +216,16 @@ export default function CourseHierarchyManager() {
         <div>
           <button
             onClick={() => setSelectedSubject(null)}
-            className="mb-4 flex items-center gap-1 bg-gray-200 px-4 py-2 rounded"
+            className="mb-4 flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
           >
             <ArrowLeft size={16} /> Back
           </button>
-          <h2 className="text-xl font-semibold mb-3">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
             Categories in {selectedSubject.name}
           </h2>
           <button
             onClick={() => handleAdd("Category", selectedSubject)}
-            className="mb-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow"
+            className="mb-6 bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg shadow hover:from-green-600 hover:to-green-700 transition"
           >
             + Add Category
           </button>
@@ -225,20 +233,21 @@ export default function CourseHierarchyManager() {
             {selectedSubject.categories.map((cat) => (
               <div
                 key={cat._id}
-                className="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition"
+                className="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition p-5 flex flex-col justify-between"
               >
-                <h5 className="font-medium">{cat.name}</h5>
-                <div className="flex gap-2 mt-3">
+                <h5 className="font-medium text-gray-800">{cat.name}</h5>
+                <div className="flex gap-2 mt-4 flex-wrap">
                   <button
                     onClick={() => handleEdit("Category", cat, "categories")}
-                    className="p-3 text-blue-600 hover:text-blue-700 rounded-md hover:bg-blue-100/80 flex items-center justify-center transition-colors"                  >
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                  >
                     <Edit2Icon size={16} />
                   </button>
                   <button
                     onClick={() =>
                       handleDelete("Category", cat._id, "categories")
                     }
-                    className="p-3 text-red-600 hover:text-red-700 rounded-md hover:bg-red-100/80 flex items-center justify-center transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -253,7 +262,8 @@ export default function CourseHierarchyManager() {
 
                         Swal.fire(
                           "Updated",
-                          `Category has been ${cat.isPublished ? "Unpublished" : "Published"
+                          `Category has been ${
+                            cat.isPublished ? "Unpublished" : "Published"
                           }`,
                           "success"
                         );
@@ -267,10 +277,11 @@ export default function CourseHierarchyManager() {
                         );
                       }
                     }}
-                    className={`px-3 py-1 rounded font-medium transition ${cat.isPublished
-                      ? "bg-red-500 hover:bg-red-600 text-white" // 🔴 Unpublish button
-                      : "bg-green-500 hover:bg-green-600 text-white" // 🟢 Publish button
-                      }`}
+                    className={`px-4 py-1.5 rounded-lg font-medium transition ${
+                      cat.isPublished
+                        ? "bg-red-500 hover:bg-red-600 text-white"
+                        : "bg-green-500 hover:bg-green-600 text-white"
+                    }`}
                   >
                     {cat.isPublished ? "Unpublish" : "Publish"}
                   </button>

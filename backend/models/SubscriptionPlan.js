@@ -8,3 +8,4 @@ const SubscriptionPlanSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 module.exports = mongoose.model("SubscriptionPlan", SubscriptionPlanSchema);
+ 

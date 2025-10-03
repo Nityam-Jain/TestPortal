@@ -10,7 +10,10 @@ import {
   Settings,
   User,
   X,
+  Users,
   BookOpen,
+  NotebookText,
+  NotepadTextDashed,
 } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
@@ -22,11 +25,10 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, view: "Dashboard" },
     { label: "Profile", icon: User, view: "Profile" },
-
-    { label: "all Student", icon: User, view: "VendorStudent" },
+    { label: "all Student", icon: Users, view: "VendorStudent" },
     { label: "Manage Questions", icon: FileText, view: "ManageQuestions" },
-    { label: "Manage Test", icon: FileText, view: "ManageTest" },
-    { label: "Manage courses", icon: FileText, view: "ManageCourses" },
+    { label: "Manage Test", icon: NotebookText, view: "ManageTest" },
+    { label: "Manage courses", icon: NotepadTextDashed, view: "ManageCourses" },
     { label: "Results", icon: BarChart2, view: "Results" },
     { label: "Settings", icon: Settings, view: "Settings" },
   ];

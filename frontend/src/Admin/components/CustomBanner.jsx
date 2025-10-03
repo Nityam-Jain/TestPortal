@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Trash2, Plus } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function AdminBanner() {
   const [banners, setBanners] = useState([]);
   const [showUpload, setShowUpload] = useState(false);
   const [file, setFile] = useState(null);
 
-  // Fetch banners  
+  // Fetch banners   
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -42,14 +43,36 @@ export default function AdminBanner() {
     }
   };
 
-  // Delete banner
+  // Delete banner with SweetAlert
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this banner?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this banner?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!result.isConfirmed) return;
+
     try {
       await axios.delete(`/api/admin/banners/${id}`);
       setBanners((prev) => prev.filter((b) => b._id !== id));
+      Swal.fire({
+        title: "Deleted!",
+        text: "Banner deleted successfully.",
+        icon: "success",
+        timer: 1200,
+        showConfirmButton: false,
+      });
     } catch (err) {
       console.error("Delete error:", err);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to delete banner.",
+        icon: "error",
+      });
     }
   };
 

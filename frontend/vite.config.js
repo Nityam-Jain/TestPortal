@@ -8,6 +8,7 @@ export default ({ mode }) => {
   return defineConfig({
     plugins: [react(), tailwindcss()],
     server: {
+      port: 5174,   // 👈 custom port added
       proxy: {
         '/api': {
           target: env.VITE_API_BASE_URL, // ✅ Use full URL here

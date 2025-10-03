@@ -3,12 +3,14 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Signup from "./SignUp";
-import { Home } from "lucide-react";
+import { Home, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const [formData, setFormData] = useState({
     emailOrUsername: "",
@@ -46,7 +48,7 @@ const Login = () => {
         sessionStorage.setItem("role", user.role);
         sessionStorage.setItem("userToken", token);
 
-         
+
         navigate("/dashboard");
       } else {
         navigate("/login");
@@ -88,17 +90,27 @@ const Login = () => {
             required
           />
         </div>
-        <div className="mb-6">
+        <div className="mb-6 relative">
           <label className="block mb-1 text-gray-700">Password</label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#1B3C53]"
+            className="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:border-[#1B3C53]"
             required
           />
+
+          {/* Eye icon */}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-13 transform -translate-y-1/2 text-gray-500 hover:text-[#1B3C53]"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
         </div>
+
         <button
           type="submit"
           disabled={loading}

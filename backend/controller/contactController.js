@@ -1,31 +1,83 @@
 const Contact = require("../models/Contact");
 
-// Create a new contact query
-const createContact = async (req, res) => {
+// =========================
+// Create Contact Query
+// =========================
+exports.createContact = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
-    if (!name || !email || !subject || !message) {
-      return res.status(400).json({ error: "All fields are required" });
+    const newQuery = new Contact(req.body);
+    const savedQuery = await newQuery.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Contact query submitted successfully",
+      data: savedQuery,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit contact query",
+      error: error.message,
+    });
+  }
+};
+
+// =========================
+// Get All Contact Queries
+// =========================
+exports.getContacts = async (req, res) => {
+  try {
+    const queries = await Contact.find().sort({ createdAt: -1 });
+    res.status(200).json({
+      success: true,
+      data: queries,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch contact queries",
+      error: error.message,
+    });
+  }
+};
+
+// =========================
+// Update Status (pending → solved or solved → pending)
+// =========================
+exports.updateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!status || !["pending", "solved"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
     }
 
-    const newContact = new Contact({ name, email, subject, message });
-    await newContact.save();
+    const updatedQuery = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
 
-    res.status(201).json({ message: "Message sent successfully", data: newContact });
-  } catch (err) {
-    console.error("Contact create error:", err);
-    res.status(500).json({ error: "Failed to send message" });
+    if (!updatedQuery) {
+      return res.status(404).json({
+        success: false,
+        message: "Query not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Status updated successfully",
+      data: updatedQuery,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update status",
+      error: error.message,
+    });
   }
 };
-
-// Get all contact queries (for admin)
-const getContacts = async (req, res) => {
-  try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
-    res.json(contacts);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch messages" });
-  }
-};
-
-module.exports = { createContact, getContacts };

@@ -8,6 +8,8 @@ import CourseHierarchyManager from '../components/CourseHierarchyManager';
 import VendorStudent from '../components/VendorStudent';
 import VendorSetting from "../components/vendorSettings";
 import VendorResult from "../components/vendorResult";
+import SubscriptionDetails from "../components/SubscriptionDetails"
+import Subscriptionplan from "../components/SubscriptionPlans"
 function VendorDashboard() {
 
     const vendorId = "6888c8542eada7b5ee86a227"; // from auth normally
@@ -69,6 +71,8 @@ function VendorDashboard() {
         )}
 
         {activeView === "Profile" && <ProfileVendor />}
+        {activeView === "Subscription" && <SubscriptionDetails/>}
+        {activeView === "Subscriptionplan" && <Subscriptionplan/>}
         {activeView === "ManageQuestions" && <VendorQuestionManager />}
         {activeView === "ManageTest" && <TestManager />}
         {activeView === "VendorStudent" && <VendorStudent/>}

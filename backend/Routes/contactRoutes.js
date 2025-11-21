@@ -1,15 +1,23 @@
 const express = require("express");
-const { createContact, getContacts } = require("../controller/contactController");
+const Contact = require("../models/Contact");
+const {
+  createContact,
+  getContacts,
+  updateStatus,
+} = require("../controller/contactController");
 
 const router = express.Router();
 
 // Create new contact query
 router.post("/", createContact);
 
-// Get all contact queries (for admin panel)
+// Get all contact queries (admin)
 router.get("/", getContacts);
 
-// DELETE route in contactRoutes.js
+// Update status (pending/solved)
+router.patch("/:id/status", updateStatus);
+
+// Delete contact query
 router.delete("/:id", async (req, res) => {
   try {
     await Contact.findByIdAndDelete(req.params.id);

@@ -1,4 +1,4 @@
-const VendorSubscription = require("../models/VendorSubscription");
+const VendorSubscription = require("../models/Vendorsubscription");
 
 const checkSubscription = async (req, res, next) => {
   try {

@@ -1,4 +1,4 @@
-const VendorSubscription = require("../models/VendorSubscription");
+const VendorSubscription = require("../models/Vendorsubscription");
 const SubscriptionPlan = require("../models/SubscriptionPlan");
 
 exports.getAvailablePlans = async (req, res) => {
@@ -11,7 +11,7 @@ exports.getAvailablePlans = async (req, res) => {
   }
 };
 
-exports.purchaseSubscription = async (req, res) => {
+exports.purchaseSubscription = async (req, res) => { 
   try {
     const { planId } = req.body;
     const vendorId = req.vendor._id;

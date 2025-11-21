@@ -11,6 +11,7 @@ import {
   User,
   X,
   Users,
+  UserCheck,
   BookOpen,
   NotebookText,
   NotepadTextDashed,
@@ -25,6 +26,8 @@ function VendorSidebar({ onLogout, setActiveView, activeView }) {
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard, view: "Dashboard" },
     { label: "Profile", icon: User, view: "Profile" },
+    { label: "Subscription Details", icon: UserCheck, view: "Subscription" },
+    { label: "Subscription Plan", icon: UserCheck, view: "Subscriptionplan" },
     { label: "all Student", icon: Users, view: "VendorStudent" },
     { label: "Manage Questions", icon: FileText, view: "ManageQuestions" },
     { label: "Manage Test", icon: NotebookText, view: "ManageTest" },

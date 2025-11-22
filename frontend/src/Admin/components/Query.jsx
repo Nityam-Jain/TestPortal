@@ -124,7 +124,7 @@ const ContactQueries = () => {
           placeholder="Search by Name, Email or Subject..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-1/2 border px-3 py-2 rounded-md shadow-sm"
+          className="w-70 border px-3 py-2 rounded-md shadow-sm"
         />
       </div>
 

@@ -161,7 +161,7 @@ const ContactUs = () => {
                 <Phone className="w-6 h-6 text-[#1B3C53]" />
                 <h4 className="text-lg font-semibold text-[#1B3C53]">Phone</h4>
               </div>
-              <p className="text-[#456882]">+91 98765 43210</p>
+              <p className="text-[#456882]">+91 9999999999</p>
             </div>
 
             {/* Email Card */}
